@@ -11,7 +11,7 @@ import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
 import 'package:campus_cart/features/auth/presentation/pages/create_account.dart';
-import 'package:campus_cart/features/auth/presentation/pages/dashboard/business_owner.dart';
+import 'package:campus_cart/features/business/presentation/pages/business_dashboard.dart';
 import 'package:campus_cart/features/auth/presentation/pages/dashboard/buyer.dart';
 import 'package:campus_cart/features/auth/presentation/pages/login_account.dart';
 import 'package:campus_cart/features/auth/presentation/pages/verify_account.dart';
