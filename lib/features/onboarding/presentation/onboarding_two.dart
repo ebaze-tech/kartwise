@@ -38,7 +38,7 @@ class OnboardingTwo extends StatelessWidget {
                       child: Image.asset(
                         'assets/images/splash_image_two.jpg',
                         fit: BoxFit.cover,
-                        height: 300,
+                        height: 500,
                         width: double.infinity,
                       ),
                     ),

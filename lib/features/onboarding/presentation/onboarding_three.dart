@@ -38,7 +38,7 @@ class OnboardingThree extends StatelessWidget {
                       child: Image.asset(
                         'assets/images/splash_image_three.jpg',
                         fit: BoxFit.cover,
-                        height: 300,
+                        height: 500,
                         width: double.infinity,
                       ),
                     ),

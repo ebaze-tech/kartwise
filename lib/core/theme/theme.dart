@@ -20,6 +20,7 @@ class DefaultColors {
   static const Color background = Color(0xFFF3F4F6);
   static const Color whiteText = Color(0xFFFFFFFF);
   static const Color darkText = Color(0xFF111827);
+  static const Color gray = Color(0xFF6B7280);
 }
 
 class AppTheme {

@@ -1,4 +1,5 @@
 import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUsecase loginUsecase;
   final VerifyEmailUsecase verifyEmailUsecase;
   final ResendOtpUsecase resendOtpUsecase;
+  final UserProfileUsecase userProfileUsecase;
   final _storage = FlutterSecureStorage();
 
   AuthBloc({
@@ -19,6 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.loginUsecase,
     required this.verifyEmailUsecase,
     required this.resendOtpUsecase,
+    required this.userProfileUsecase,
   }) : super(AuthInitial()) {
     on<RegisterEvent>(_onRegister);
     on<LoginEvent>(_onLogin);
@@ -26,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResendOtpEvent>(_onResendOtp);
     on<CheckAuthStatusEvent>(_onCheckAuthStatus);
     on<LogoutEvent>(_onLogout);
+    on<UserProfileEvent>(_onGetUserProfile);
   }
 
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
@@ -107,6 +111,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       emit(AuthFailure(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onGetUserProfile(
+    UserProfileEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(UserProfileLoading());
+    try {
+      final response = await userProfileUsecase.call();
+      print(response.data);
+      emit(UserProfileLoaded(data: response.data, message: response.message));
+    } catch (e) {
+      emit(UserProfileError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 

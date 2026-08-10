@@ -1,4 +1,5 @@
 import 'package:campus_cart/features/auth/data/datasource/auth_remote_data_source.dart';
+import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
 import 'package:campus_cart/features/auth/domain/entities/login_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/otp_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/registration_entity.dart';
@@ -39,5 +40,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<OtpEntity> resendOtp() async {
     return await authRemoteDataSource.resendOtp();
+  }
+
+  @override
+  Future<UserProfileModel> getUserProfile() async {
+    return await authRemoteDataSource.getUserProfile();
   }
 }

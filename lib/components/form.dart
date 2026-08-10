@@ -28,7 +28,7 @@ class CustomFormField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(),
         keyboardType: keyboardType,
         validator: validator,
         decoration: InputDecoration(

@@ -70,7 +70,7 @@ class _SleekLoaderState extends State<SleekLoader>
 
             // App Name
             Text(
-              'KartWise',
+              'PeerPlaza',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: Theme.of(context).primaryColor,
                 fontSize: 32,

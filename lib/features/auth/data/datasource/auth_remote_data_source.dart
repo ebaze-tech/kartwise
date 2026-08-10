@@ -1,13 +1,10 @@
-import 'dart:convert';
-
 import 'package:campus_cart/core/network/dio.dart';
 import 'package:campus_cart/features/auth/data/models/login_model.dart';
 import 'package:campus_cart/features/auth/data/models/otp_model.dart';
 import 'package:campus_cart/features/auth/data/models/registration_model.dart';
+import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 
 class AuthRemoteDataSource {
   final ApiClient apiClient;
@@ -76,6 +73,16 @@ class AuthRemoteDataSource {
         data: {'email': email},
       );
       return OtpModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<UserProfileModel> getUserProfile() async {
+    try {
+      final response = await apiClient.dio.get('/accounts/me');
+
+      return UserProfileModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
     }

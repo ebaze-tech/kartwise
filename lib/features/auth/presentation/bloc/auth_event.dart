@@ -35,4 +35,6 @@ class ResendOtpEvent extends AuthEvent {
   ResendOtpEvent();
 }
 
+class UserProfileEvent extends AuthEvent {}
+
 class CheckAuthStatusEvent extends AuthEvent {}

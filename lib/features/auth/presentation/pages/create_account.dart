@@ -75,7 +75,7 @@ class _CreateAccountState extends State<CreateAccount> {
             ),
             SizedBox(width: 5),
             Text(
-              'KartWise',
+              'PeerPlaza',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).primaryColor,
                 fontSize: 25,
@@ -103,7 +103,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Text(
-                    'Join hundreds of students already trading on KartWise. Discover unique items, support your peers, and make campus life easier.',
+                    'Join hundreds of students already trading on PeerPlaza. Discover unique items, support your peers, and make campus life easier.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                     textDirection: TextDirection.ltr,
@@ -271,7 +271,6 @@ class _CreateAccountState extends State<CreateAccount> {
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: Colors.transparent,
                           elevation: 0,
-                          // 2. Remove default SnackBar padding
                           padding: EdgeInsets.zero,
                           margin: const EdgeInsets.all(16),
                           duration: const Duration(seconds: 4),
@@ -285,7 +284,6 @@ class _CreateAccountState extends State<CreateAccount> {
                               color: DefaultColors.danger,
                               boxShadow: const [
                                 BoxShadow(
-                                  // Consider using a subtle shadow like Colors.black26 if secondary is too bright
                                   color: DefaultColors.neutral,
                                   blurRadius: 8.0,
                                   offset: Offset(0, 3),
@@ -299,10 +297,10 @@ class _CreateAccountState extends State<CreateAccount> {
                             ),
                             child: Text(
                               state.errorMessage,
-                              style: Theme.of(context).textTheme.bodySmall
+                              style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(
-                                    fontSize: FontSize.standard,
                                     color: DefaultColors.whiteText,
+                                    backgroundColor: DefaultColors.danger,
                                   ),
                               textAlign: TextAlign.center,
                             ),

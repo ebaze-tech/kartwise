@@ -5,12 +5,14 @@ class Button extends StatelessWidget {
   final String buttonText;
   final bool isIconButton;
   final VoidCallback onPressed;
+  final Color? buttonColor;
 
   const Button({
     super.key,
     required this.buttonText,
     required this.isIconButton,
     required this.onPressed,
+    this.buttonColor,
   });
 
   @override
@@ -23,7 +25,7 @@ class Button extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: buttonColor ?? Theme.of(context).primaryColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),

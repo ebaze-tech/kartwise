@@ -6,15 +6,32 @@ import 'package:campus_cart/features/auth/domain/repositories/auth_repository_im
 import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
 import 'package:campus_cart/features/auth/presentation/pages/create_account.dart';
+import 'package:campus_cart/features/auth/presentation/pages/update_email.dart';
+import 'package:campus_cart/features/auth/presentation/pages/update_password.dart';
+import 'package:campus_cart/features/auth/presentation/pages/update_university.dart';
+import 'package:campus_cart/features/auth/presentation/pages/user_profile.dart';
+import 'package:campus_cart/features/business/data/datasource/business_remote_data_source.dart';
+import 'package:campus_cart/features/business/domain/repositories/business_repository_impl.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_categories_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_usecase.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/business/presentation/cubit/activate_business.dart';
+import 'package:campus_cart/features/business/presentation/pages/business_created.dart';
 import 'package:campus_cart/features/business/presentation/pages/business_dashboard.dart';
+import 'package:campus_cart/features/business/presentation/pages/register_business.dart';
 import 'package:campus_cart/features/auth/presentation/pages/dashboard/buyer.dart';
 import 'package:campus_cart/features/auth/presentation/pages/login_account.dart';
 import 'package:campus_cart/features/auth/presentation/pages/verify_account.dart';
+import 'package:campus_cart/features/business/presentation/pages/update_business.dart';
+import 'package:campus_cart/features/business/presentation/pages/wrapper_screen.dart';
 import 'package:campus_cart/features/onboarding/presentation/onboarding_three.dart';
 import 'package:campus_cart/features/onboarding/presentation/onboarding_two.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +44,7 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
   late AuthBloc authBloc;
+  late BusinessBloc businessBloc;
 
   final apiClient = ApiClient(
     onUnauthenticated: () {
@@ -38,32 +56,57 @@ Future<void> main() async {
   final authRepository = AuthRepositoryImpl(
     authRemoteDataSource: authRemoteDataSource,
   );
+  final businessRemoteDataSource = BusinessRemoteDataSource(
+    apiClient: apiClient,
+  );
+  final businessRepository = BusinessRepositoryImpl(
+    businessRemoteDataSource: businessRemoteDataSource,
+  );
 
   authBloc = AuthBloc(
     registerUsecase: RegisterUsecase(authRepository: authRepository),
     loginUsecase: LoginUsecase(authRepository: authRepository),
     verifyEmailUsecase: VerifyEmailUsecase(authRepository: authRepository),
     resendOtpUsecase: ResendOtpUsecase(authRepository: authRepository),
+    userProfileUsecase: UserProfileUsecase(authRepository: authRepository),
   );
 
-  runApp(MyApp(authBloc: authBloc));
+  businessBloc = BusinessBloc(
+    businessRegistrationUseCase: BusinessRegistrationUseCase(
+      repository: businessRepository,
+    ),
+    getBusinessCategoriesUseCase: BusinessCategoriesUseCase(
+      repository: businessRepository,
+    ),
+    getBusinessProductsUseCase: BusinessProductsUsecase(
+      repository: businessRepository,
+    ),
+    getBusinessUseCase: BusinessUseCase(
+      repository: businessRepository,
+    ),
+  );
+
+  runApp(MyApp(authBloc: authBloc, businessBloc: businessBloc));
 }
 
 class MyApp extends StatelessWidget {
   final AuthBloc authBloc;
+  final BusinessBloc businessBloc;
 
-  const MyApp({super.key, required this.authBloc});
+  const MyApp({super.key, required this.authBloc, required this.businessBloc});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(
-          value: authBloc..add(CheckAuthStatusEvent()), // Fire startup check
+        BlocProvider.value(value: authBloc..add(CheckAuthStatusEvent())),
+        BlocProvider.value(value: businessBloc),
+        BlocProvider<ActiveBusinessCubit>(
+          create: (context) => ActiveBusinessCubit(),
         ),
       ],
       child: MaterialApp(
-        title: 'KartWise',
+        title: 'PeerPlaza',
         theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
         home: BlocBuilder<AuthBloc, AuthState>(
@@ -76,7 +119,7 @@ class MyApp extends StatelessWidget {
 
             if (state is AuthSuccess) {
               if (state.role == 'BUSINESS_OWNER') {
-                return const BusinessOwner();
+                return const BusinessWrapper();
               } else if (state.role == 'BUYER') {
                 return const Buyer();
               }
@@ -91,8 +134,17 @@ class MyApp extends StatelessWidget {
           '/signup_account': (context) => const CreateAccount(),
           '/signin_account': (context) => const LoginAccount(),
           '/verify_account': (context) => const VerifyAccount(),
-          '/business_owner_dashboard': (context) => const BusinessOwner(),
+          '/business_owner_dashboard': (context) => const BusinessWrapper(),
           '/buyer_dashboard': (context) => const Buyer(),
+          '/business_created': (context) => const BusinessCreated(),
+          '/business_dashboard': (context) => const BusinessDashboard(),
+          '/business_wrapper': (context) => const BusinessWrapper(),
+          '/register_business': (context) => const RegisterBusiness(),
+          '/user_profile': (context) => const UserProfile(),
+          '/update_email': (context) => const UpdateEmail(),
+          '/update_password': (context) => const UpdatePassword(),
+          '/update_university': (context) => const UpdateUniversity(),
+          '/update_business': (context) => const UpdateBusiness(),
         },
       ),
     );
