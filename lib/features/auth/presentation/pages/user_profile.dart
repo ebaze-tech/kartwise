@@ -19,7 +19,6 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-
     context.read<AuthBloc>().add(UserProfileEvent());
   }
 
@@ -37,30 +36,60 @@ class _UserProfileState extends State<UserProfile> {
         iconTheme: const IconThemeData(color: DefaultColors.background),
         backgroundColor: DefaultColors.primary,
         centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'User Profile',
-              style: TextStyle(
-                color: DefaultColors.background,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.settings),
-              color: DefaultColors.background,
-              iconSize: 30,
-            ),
-          ],
+        title: const Text(
+          'User Profile',
+          style: TextStyle(
+            color: DefaultColors.background,
+            fontSize: FontSize.headingMedium,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is UserProfileError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                padding: EdgeInsets.zero,
+                margin: const EdgeInsets.all(16),
+                duration: const Duration(seconds: 4),
+                content: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: DefaultColors.danger,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: DefaultColors.neutral,
+                        blurRadius: 8.0,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: DefaultColors.neutral, width: 1),
+                  ),
+                  child: Text(
+                    state.errorMessage,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: DefaultColors.whiteText,
+                      backgroundColor: DefaultColors.danger,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is UserProfileLoading) {
-            return Center(child: const GradientSpinner(size: 50));
+            return const Center(child: GradientSpinner(size: 50));
           }
           if (state is UserProfileLoaded) {
             final userProfile = state.data;
@@ -73,44 +102,32 @@ class _UserProfileState extends State<UserProfile> {
             );
           }
           if (state is UserProfileError) {
-            return SnackBar(
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              padding: EdgeInsets.zero,
-              margin: const EdgeInsets.all(16),
-              duration: const Duration(seconds: 4),
-              content: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: DefaultColors.danger,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: DefaultColors.neutral,
-                      blurRadius: 8.0,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: DefaultColors.neutral, width: 1),
-                ),
-                child: Text(
-                  state.errorMessage,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: DefaultColors.whiteText,
-                    backgroundColor: DefaultColors.danger,
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: DefaultColors.danger,
+                    size: 48,
                   ),
-                  textAlign: TextAlign.center,
-                ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Failed to load profile',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.read<AuthBloc>().add(UserProfileEvent());
+                    },
+                    child: const Text('Try Again'),
+                  ),
+                ],
               ),
             );
           }
 
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         },
       ),
     );

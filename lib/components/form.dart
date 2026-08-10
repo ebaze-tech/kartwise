@@ -9,6 +9,7 @@ class CustomFormField extends StatelessWidget {
   final TextStyle? labelTextStyle;
   final bool obscureText;
   final IconData icon;
+  final bool readOnly;
 
   const CustomFormField({
     super.key,
@@ -19,6 +20,7 @@ class CustomFormField extends StatelessWidget {
     required this.obscureText,
     required this.labelTextStyle,
     required this.icon,
+    required this.readOnly,
   });
 
   @override
@@ -28,8 +30,9 @@ class CustomFormField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(),
         keyboardType: keyboardType,
+        readOnly: readOnly,
         validator: validator,
         decoration: InputDecoration(
           labelText: labelText,

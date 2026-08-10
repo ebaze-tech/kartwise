@@ -37,4 +37,29 @@ class ResendOtpEvent extends AuthEvent {
 
 class UserProfileEvent extends AuthEvent {}
 
+class UpdateUserProfileEvent extends AuthEvent {
+  final String university;
+
+  UpdateUserProfileEvent({required this.university});
+}
+
 class CheckAuthStatusEvent extends AuthEvent {}
+
+class RequestEmailUpdateEvent extends AuthEvent {
+  final String currentEmail;
+  final String newEmail;
+
+  RequestEmailUpdateEvent({required this.currentEmail, required this.newEmail});
+}
+
+class ConfirmEmailUpdateEvent extends AuthEvent {
+  final String otp;
+
+  ConfirmEmailUpdateEvent({required this.otp});
+}
+
+class UpdateUniversityEvent extends AuthEvent {
+  final String university;
+
+  UpdateUniversityEvent({required this.university});
+}

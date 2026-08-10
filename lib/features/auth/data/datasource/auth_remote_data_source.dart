@@ -1,4 +1,6 @@
 import 'package:campus_cart/core/network/dio.dart';
+import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
+import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/login_model.dart';
 import 'package:campus_cart/features/auth/data/models/otp_model.dart';
 import 'package:campus_cart/features/auth/data/models/registration_model.dart';
@@ -83,6 +85,49 @@ class AuthRemoteDataSource {
       final response = await apiClient.dio.get('/accounts/me');
 
       return UserProfileModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<UserProfileModel> updateUserProfile(String university) async {
+    try {
+      final response = await apiClient.dio.patch(
+        '/accounts/me',
+        data: {'university': university},
+      );
+
+      return UserProfileModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<EmailUpdateModel> updateEmail(
+    String currentEmail,
+    String newEmail,
+  ) async {
+    try {
+      final response = await apiClient.dio.patch(
+        '/accounts/request-email-update',
+        data: {'currentEmail': currentEmail, 'newEmail': newEmail},
+      );
+      print(response.data);
+      return EmailUpdateModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<ConfirmEmailUpdateModel> confirmEmailUpdate(String otp) async {
+    try {
+      final response = await apiClient.dio.patch(
+        '/accounts/confirm-email-update',
+        data: {'otp': otp},
+      );
+      print(response.data);
+
+      return ConfirmEmailUpdateModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
     }

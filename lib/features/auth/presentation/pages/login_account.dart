@@ -85,7 +85,7 @@ class _LoginAccountState extends State<LoginAccount> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Text(
-                    'Everything you need to buy and sell on campus is just a sign in away',
+                    'Everything you need to buy and sell on campus is just a login away',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                     textDirection: TextDirection.ltr,
@@ -106,6 +106,7 @@ class _LoginAccountState extends State<LoginAccount> {
                     }
                     return null;
                   },
+                  readOnly: false,
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
@@ -123,6 +124,7 @@ class _LoginAccountState extends State<LoginAccount> {
                   keyboardType: TextInputType.text,
                   obscureText: true,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
+                  readOnly: false,
                 ),
                 SizedBox(width: 10),
                 BlocConsumer<AuthBloc, AuthState>(

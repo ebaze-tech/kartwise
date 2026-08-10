@@ -1,10 +1,7 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/core/theme/theme.dart';
-import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Profile extends StatelessWidget {
   final Map<String, dynamic> userProfileEntity;
@@ -68,8 +65,13 @@ class Profile extends StatelessWidget {
                 value: email,
                 onTap: () {
                   // update email address action
-                  Navigator.pushNamed(context, '/update_email');
+                  Navigator.pushNamed(
+                    context,
+                    '/update_email',
+                    arguments: email,
+                  );
                 },
+                trailingIcon: Icons.chevron_right,
               ),
               const Divider(height: 1, indent: 56),
               _buildListItem(
@@ -81,6 +83,7 @@ class Profile extends StatelessWidget {
                   // update university action
                   Navigator.pushNamed(context, '/update_university');
                 },
+                trailingIcon: Icons.chevron_right,
               ),
             ],
           ),
@@ -101,6 +104,7 @@ class Profile extends StatelessWidget {
                   // update store name action
                   Navigator.pushNamed(context, '/update_business');
                 },
+                trailingIcon: Icons.chevron_right,
               ),
               const Divider(height: 1, indent: 56),
               _buildListItem(
@@ -112,6 +116,7 @@ class Profile extends StatelessWidget {
                   // update payment methods action
                   Navigator.pushNamed(context, '/update_payment_methods');
                 },
+                trailingIcon: Icons.chevron_right,
               ),
             ],
           ),
@@ -144,14 +149,14 @@ class Profile extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          Button(
-            buttonText: "Edit Profile",
-            isIconButton: false,
-            onPressed: () {
-              // Handle edit profile action
-            },
-            buttonColor: DefaultColors.primary,
-          ),
+          // Button(
+          //   buttonText: "Edit Profile",
+          //   isIconButton: false,
+          //   onPressed: () {
+          //     // Handle edit profile action
+          //   },
+          //   buttonColor: DefaultColors.primary,
+          // ),
         ],
       ),
     );
@@ -260,6 +265,7 @@ class Profile extends StatelessWidget {
   Widget _buildListItem({
     required BuildContext context,
     required IconData icon,
+    IconData? trailingIcon,
     required String label,
     required String value,
     required VoidCallback onTap,
@@ -274,7 +280,9 @@ class Profile extends StatelessWidget {
           context,
         ).textTheme.bodySmall?.copyWith(color: DefaultColors.gray),
       ),
-      trailing: const Icon(Icons.chevron_right, color: DefaultColors.gray),
+      trailing: trailingIcon != null
+          ? Icon(trailingIcon, color: DefaultColors.gray)
+          : null,
       subtitle: Text(
         value,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(

@@ -3,14 +3,18 @@ import 'package:campus_cart/core/network/dio.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:campus_cart/features/auth/domain/repositories/auth_repository_impl.dart';
+import 'package:campus_cart/features/auth/domain/usecases/confirm_email_update_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
+import 'package:campus_cart/features/auth/presentation/pages/confirm_email_update.dart';
 import 'package:campus_cart/features/auth/presentation/pages/create_account.dart';
 import 'package:campus_cart/features/auth/presentation/pages/update_email.dart';
 import 'package:campus_cart/features/auth/presentation/pages/update_password.dart';
@@ -69,6 +73,12 @@ Future<void> main() async {
     verifyEmailUsecase: VerifyEmailUsecase(authRepository: authRepository),
     resendOtpUsecase: ResendOtpUsecase(authRepository: authRepository),
     userProfileUsecase: UserProfileUsecase(authRepository: authRepository),
+    requestEmailUpdateUsecase: RequestEmailUpdateUsecase(
+      authRepository: authRepository,
+    ),
+    confirmEmailUpdateUsecase: ConfirmEmailUpdateUsecase(
+      authRepository: authRepository,
+    ),updateProfileUsecase: UpdateProfileUseCase(authRepository: authRepository)
   );
 
   businessBloc = BusinessBloc(
@@ -81,9 +91,7 @@ Future<void> main() async {
     getBusinessProductsUseCase: BusinessProductsUsecase(
       repository: businessRepository,
     ),
-    getBusinessUseCase: BusinessUseCase(
-      repository: businessRepository,
-    ),
+    getBusinessUseCase: BusinessUseCase(repository: businessRepository),
   );
 
   runApp(MyApp(authBloc: authBloc, businessBloc: businessBloc));
@@ -145,6 +153,7 @@ class MyApp extends StatelessWidget {
           '/update_password': (context) => const UpdatePassword(),
           '/update_university': (context) => const UpdateUniversity(),
           '/update_business': (context) => const UpdateBusiness(),
+          '/confirm_email_update': (context) => const ConfirmEmailUpdate(),
         },
       ),
     );

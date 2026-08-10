@@ -1,9 +1,12 @@
+import 'package:campus_cart/features/auth/domain/usecases/confirm_email_update_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
@@ -14,6 +17,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VerifyEmailUsecase verifyEmailUsecase;
   final ResendOtpUsecase resendOtpUsecase;
   final UserProfileUsecase userProfileUsecase;
+  final RequestEmailUpdateUsecase requestEmailUpdateUsecase;
+  final ConfirmEmailUpdateUsecase confirmEmailUpdateUsecase;
+  final UpdateProfileUseCase updateProfileUsecase;
   final _storage = FlutterSecureStorage();
 
   AuthBloc({
@@ -22,6 +28,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.verifyEmailUsecase,
     required this.resendOtpUsecase,
     required this.userProfileUsecase,
+    required this.requestEmailUpdateUsecase,
+    required this.confirmEmailUpdateUsecase,
+    required this.updateProfileUsecase,
   }) : super(AuthInitial()) {
     on<RegisterEvent>(_onRegister);
     on<LoginEvent>(_onLogin);
@@ -30,6 +39,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuthStatusEvent>(_onCheckAuthStatus);
     on<LogoutEvent>(_onLogout);
     on<UserProfileEvent>(_onGetUserProfile);
+    on<UpdateUniversityEvent>(_onUpdateUserProfile);
+    on<RequestEmailUpdateEvent>(_onRequestEmailUpdate);
+    on<ConfirmEmailUpdateEvent>(_onConfirmEmailUpdate);
   }
 
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
@@ -89,6 +101,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  Future<void> _onRequestEmailUpdate(
+    RequestEmailUpdateEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(RequestEmailUpdateLoading());
+    try {
+      final response = await requestEmailUpdateUsecase.call(
+        event.currentEmail,
+        event.newEmail,
+      );
+      emit(RequestEmailUpdateSuccess(message: response.message));
+    } catch (e) {
+      emit(RequestEmailUpdateError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onConfirmEmailUpdate(
+    ConfirmEmailUpdateEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(ConfirmEmailUpdateLoading());
+    try {
+      final response = await confirmEmailUpdateUsecase.call(event.otp);
+      emit(ConfirmEmailUpdateSuccess(message: response.message));
+    } catch (e) {
+      emit(ConfirmEmailUpdateError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
   Future<void> _onCheckAuthStatus(
     CheckAuthStatusEvent event,
     Emitter<AuthState> emit,
@@ -125,6 +166,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(UserProfileLoaded(data: response.data, message: response.message));
     } catch (e) {
       emit(UserProfileError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onUpdateUserProfile(
+    UpdateUniversityEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(UpdateUniversityLoading());
+    try {
+      final response = await updateProfileUsecase.call(event.university);
+      print(response.data);
+      emit(
+        UpdateUniversitySuccess(data: response.data, message: response.message),
+      );
+    } catch (e) {
+      emit(UpdateUniversityError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 

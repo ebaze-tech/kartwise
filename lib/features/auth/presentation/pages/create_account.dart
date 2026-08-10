@@ -127,6 +127,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
+                  readOnly: false,
                 ),
                 CustomFormField(
                   icon: Icons.person,
@@ -141,6 +142,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   keyboardType: TextInputType.text,
                   obscureText: false,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
+                  readOnly: false,
                 ),
                 SizedBox(width: 10),
                 CustomFormField(
@@ -156,16 +158,23 @@ class _CreateAccountState extends State<CreateAccount> {
                   keyboardType: TextInputType.text,
                   obscureText: false,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
+                  readOnly: false,
                 ),
                 CustomDropdownField<String>(
                   labelText: "Role",
                   value: _selectedRole,
                   icon: Icons.work,
                   items: const [
-                    DropdownMenuItem(value: 'BUYER', child: Text('Buyer')),
+                    DropdownMenuItem(
+                      value: 'BUYER',
+                      child: Text('Buyer', style: TextStyle(fontSize: 13)),
+                    ),
                     DropdownMenuItem(
                       value: 'BUSINESS_OWNER',
-                      child: Text('Business Owner'),
+                      child: Text(
+                        'Business Owner',
+                        style: TextStyle(fontSize: 13),
+                      ),
                     ),
                   ],
                   onChanged: (value) {
@@ -199,6 +208,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     }
                     return null;
                   },
+                  readOnly: false,
                   keyboardType: TextInputType.visiblePassword,
                   obscureText: true,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
