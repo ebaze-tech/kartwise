@@ -1,6 +1,6 @@
 import 'package:campus_cart/components/button.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
-import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
@@ -30,18 +30,9 @@ class _VerifyAccountState extends State<VerifyAccount> {
   void _onVerifyEmail() {
     final pin = _otpController.text.trim();
     if (pin.isEmpty || pin.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please enter the complete 6-digit code.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: DefaultColors.whiteText,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          backgroundColor: DefaultColors.danger,
-        ),
+      CustomSnackBar(
+        message: 'Please enter the complete 6-digit code.',
+        context: context,
       );
     } else {
       print('Entered OTP: $pin');
@@ -184,38 +175,15 @@ class _VerifyAccountState extends State<VerifyAccount> {
                   },
                   listener: (context, state) {
                     if (state is AuthSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            state.message,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: DefaultColors.whiteText,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          backgroundColor: DefaultColors.success,
-                        ),
-                      );
+                      CustomSnackBar(message: state.message, context: context);
                       Navigator.pushReplacementNamed(
                         context,
                         '/signin_account',
                       );
                     } else if (state is AuthFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            state.errorMessage,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: DefaultColors.whiteText,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          backgroundColor: DefaultColors.danger,
-                        ),
+                      CustomSnackBar(
+                        message: state.errorMessage,
+                        context: context,
                       );
                     }
                   },

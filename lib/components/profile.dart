@@ -1,4 +1,3 @@
-import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +63,6 @@ class Profile extends StatelessWidget {
                 label: 'Email Address',
                 value: email,
                 onTap: () {
-                  // update email address action
                   Navigator.pushNamed(
                     context,
                     '/update_email',
@@ -80,7 +78,6 @@ class Profile extends StatelessWidget {
                 label: 'University',
                 value: university,
                 onTap: () {
-                  // update university action
                   Navigator.pushNamed(context, '/update_university');
                 },
                 trailingIcon: Icons.chevron_right,
@@ -89,7 +86,6 @@ class Profile extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // 3. Business Profile Section
           _buildSectionCard(
             context: context,
             title: 'BUSINESS PROFILE',
@@ -101,7 +97,6 @@ class Profile extends StatelessWidget {
                 label: 'Store Name',
                 value: storeName,
                 onTap: () {
-                  // update store name action
                   Navigator.pushNamed(context, '/update_business');
                 },
                 trailingIcon: Icons.chevron_right,
@@ -113,7 +108,6 @@ class Profile extends StatelessWidget {
                 label: 'Payment Methods',
                 value: 'Cash, Transfer, Card',
                 onTap: () {
-                  // update payment methods action
                   Navigator.pushNamed(context, '/update_payment_methods');
                 },
                 trailingIcon: Icons.chevron_right,
@@ -131,7 +125,6 @@ class Profile extends StatelessWidget {
                 icon: Icons.lock_outline,
                 label: 'Change Password',
                 onTap: () {
-                  // update password action
                   Navigator.pushNamed(context, '/update_password');
                 },
               ),
@@ -140,23 +133,11 @@ class Profile extends StatelessWidget {
                 context: context,
                 icon: Icons.notifications_none_outlined,
                 label: 'Notification Settings',
-                onTap: () {
-                  // update notification settings action
-                  // Navigator.pushNamed(context, '/update_notification_settings');
-                },
+                onTap: () {},
               ),
             ],
           ),
           const SizedBox(height: 24),
-
-          // Button(
-          //   buttonText: "Edit Profile",
-          //   isIconButton: false,
-          //   onPressed: () {
-          //     // Handle edit profile action
-          //   },
-          //   buttonColor: DefaultColors.primary,
-          // ),
         ],
       ),
     );
@@ -178,7 +159,7 @@ class Profile extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: DefaultColors.primary, // The green edit badge color
+                  color: DefaultColors.primary,
                   shape: BoxShape.circle,
                   border: Border.all(color: DefaultColors.background, width: 2),
                 ),
@@ -325,7 +306,7 @@ class Profile extends StatelessWidget {
       ),
       child: Text(
         status,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 10,
           fontWeight: FontWeight.bold,

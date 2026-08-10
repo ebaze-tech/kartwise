@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/dropdown.dart';
 import 'package:campus_cart/components/form.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/components/toggle.dart';
 import 'package:campus_cart/core/theme/theme.dart';
@@ -111,44 +112,7 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthFailure && state.errorMessage.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                padding: EdgeInsets.zero,
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(seconds: 4),
-                content: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: DefaultColors.danger,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: DefaultColors.neutral,
-                        blurRadius: 8.0,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: DefaultColors.neutral, width: 1),
-                  ),
-                  child: Text(
-                    state.errorMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: DefaultColors.whiteText,
-                      backgroundColor: DefaultColors.danger,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            );
-
+            CustomSnackBar(message: state.errorMessage, context: context);
             Navigator.pushReplacementNamed(context, '/signin_account');
           }
         },
@@ -193,11 +157,9 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
                   BlocConsumer<BusinessBloc, BusinessState>(
                     listener: (context, state) {
                       if (state is BusinessCategoryError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(state.errorMessage),
-                            backgroundColor: DefaultColors.danger,
-                          ),
+                        CustomSnackBar(
+                          message: state.errorMessage,
+                          context: context,
                         );
                       }
                     },
@@ -375,14 +337,9 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
                           if (_selectedCategory != null) {
                             _onRegisterBusiness(_selectedCategory!);
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Please select a Business category",
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                backgroundColor: DefaultColors.danger,
-                              ),
+                            CustomSnackBar(
+                              message: 'Please select a business category.',
+                              context: context,
                             );
                           }
                         },
@@ -390,22 +347,12 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
                     },
                     listener: (context, state) {
                       if (state is BusinessLoaded) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              state.message,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: DefaultColors.whiteText,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                            backgroundColor: DefaultColors.success,
-                          ),
+                        CustomSnackBar(
+                          message: state.message,
+                          context: context,
                         );
                         context.read<ActiveBusinessCubit>().setActiveBusiness(
-                          state.data!.id,
+                          state.data.id,
                         );
                         Navigator.pushReplacementNamed(
                           context,
@@ -413,46 +360,9 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
                           arguments: state.data,
                         );
                       } else if (state is BusinessError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.transparent,
-                            elevation: 0,
-                            padding: EdgeInsets.zero,
-                            margin: const EdgeInsets.all(16),
-                            duration: const Duration(seconds: 4),
-                            content: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color: DefaultColors.danger,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: DefaultColors.neutral,
-                                    blurRadius: 8.0,
-                                    offset: Offset(0, 3),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: DefaultColors.neutral,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Text(
-                                state.errorMessage,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      color: DefaultColors.whiteText,
-                                      backgroundColor: DefaultColors.danger,
-                                    ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
+                        CustomSnackBar(
+                          message: state.errorMessage,
+                          context: context,
                         );
                       }
                     },

@@ -1,6 +1,7 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/dropdown.dart';
 import 'package:campus_cart/components/form.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
@@ -257,65 +258,15 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   listener: (context, state) {
                     if (state is AuthSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            state.message,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: DefaultColors.whiteText,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          backgroundColor: DefaultColors.success,
-                        ),
-                      );
+                      CustomSnackBar(message: state.message, context: context);
                       Navigator.pushReplacementNamed(
                         context,
                         '/verify_account',
                       );
                     } else if (state is AuthFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          padding: EdgeInsets.zero,
-                          margin: const EdgeInsets.all(16),
-                          duration: const Duration(seconds: 4),
-                          content: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: DefaultColors.danger,
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: DefaultColors.neutral,
-                                  blurRadius: 8.0,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: DefaultColors.neutral,
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              state.errorMessage,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: DefaultColors.whiteText,
-                                    backgroundColor: DefaultColors.danger,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
+                      CustomSnackBar(
+                        message: state.errorMessage,
+                        context: context,
                       );
                     }
                   },

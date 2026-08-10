@@ -43,15 +43,15 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         event.bannerImage,
         event.isActive,
       );
-      await _storage.write(key: 'businessId', value: response.data?.id);
-      await _storage.write(key: 'businessName', value: response.data?.name);
+      await _storage.write(key: 'businessId', value: response.data.id);
+      await _storage.write(key: 'businessName', value: response.data.name);
       await _storage.write(
         key: 'businessEmail',
-        value: response.data?.emailAddress,
+        value: response.data.emailAddress,
       );
       await _storage.write(
         key: 'businessPhone',
-        value: response.data?.phoneNumber,
+        value: response.data.phoneNumber,
       );
       emit(BusinessLoaded(message: response.message, data: response.data));
     } catch (e) {
@@ -66,14 +66,16 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     emit(BusinessLoading());
     try {
       final response = await _getBusinessUseCase.call();
-      if (response .data != null) {
-        await _storage.write(key: 'businessId', value: response.data!.id);
-        await _storage.write(key: 'businessName', value: response.data!.name);
-        await _storage.write(
-          key: 'businessEmail',
-          value: response.data!.emailAddress,
-        );
-      }
+      await _storage.write(key: 'businessId', value: response.data.id);
+      await _storage.write(key: 'businessName', value: response.data.name);
+      await _storage.write(
+        key: 'businessEmail',
+        value: response.data.emailAddress,
+      );
+      await _storage.write(
+        key: 'businessPhone',
+        value: response.data.phoneNumber,
+      );
       emit(BusinessLoaded(message: response.message, data: response.data));
     } catch (e) {
       emit(BusinessError(errorMessage: _getCleanErrorMessage(e)));
@@ -89,17 +91,22 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
       final businessId = await _storage.read(key: 'businessId');
       final businessName = await _storage.read(key: 'businessName');
       final businessEmail = await _storage.read(key: 'businessEmail');
+      final businessPhone = await _storage.read(key: 'businessPhone');
 
       print(
-        'Local Business Data: ID=$businessId, Name=$businessName, Email=$businessEmail',
+        'Local Business Data: ID=$businessId, Name=$businessName, Email=$businessEmail, Phone=$businessPhone',
       );
 
-      if (businessId != null && businessName != null && businessEmail != null) {
+      if (businessId != null &&
+          businessName != null &&
+          businessEmail != null &&
+          businessPhone != null) {
         emit(
           LocalBusinessLoaded(
             businessId: businessId,
             businessName: businessName,
             businessEmail: businessEmail,
+            businessPhone: businessPhone,
           ),
         );
       } else {

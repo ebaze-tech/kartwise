@@ -56,11 +56,9 @@ class _BusinessCreatedState extends State<BusinessCreated> {
                 buttonText: "Proceed to Dashboard",
                 isIconButton: false,
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
+                  Navigator.pushNamed(
                     context,
                     '/business_dashboard',
-                    (route) => false,
-                    arguments: businessData
                   );
                 },
               ),

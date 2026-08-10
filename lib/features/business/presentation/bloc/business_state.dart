@@ -10,9 +10,9 @@ class BusinessLoading extends BusinessState {}
 
 class BusinessLoaded extends BusinessState {
   final String message;
-  final BusinessEntity? data;
+  final BusinessEntity data;
 
-  BusinessLoaded({required this.message, this.data});
+  BusinessLoaded({required this.message, required this.data});
 }
 
 class BusinessError extends BusinessState {
@@ -59,10 +59,12 @@ class LocalBusinessLoaded extends BusinessState {
   final String businessId;
   final String businessName;
   final String businessEmail;
+  final String businessPhone;
 
   LocalBusinessLoaded({
     required this.businessId,
     required this.businessName,
     required this.businessEmail,
+    required this.businessPhone,
   });
 }
