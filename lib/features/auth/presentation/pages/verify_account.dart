@@ -94,7 +94,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
             ),
             SizedBox(width: 5),
             Text(
-              'KartWise',
+              'PeerPlaza',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).primaryColor,
                 fontSize: 25,

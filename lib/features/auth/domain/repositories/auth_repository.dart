@@ -1,3 +1,6 @@
+import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
+import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
+import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
 import 'package:campus_cart/features/auth/domain/entities/login_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/otp_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/registration_entity.dart';
@@ -15,4 +18,12 @@ abstract class AuthRepository {
   Future<OtpEntity> verifyEmail(String otp);
 
   Future<OtpEntity> resendOtp();
+
+  Future<UserProfileModel> getUserProfile();
+
+  Future<UserProfileModel> updateUserProfile(String university);
+
+  Future<EmailUpdateModel> updateEmail(String currentEmail, String newEmail);
+
+  Future<ConfirmEmailUpdateModel> confirmEmailUpdate(String otp);
 }

@@ -17,7 +17,6 @@ class LoginAccount extends StatefulWidget {
 }
 
 class _LoginAccountState extends State<LoginAccount> {
-  String? _selectedRole;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -58,7 +57,7 @@ class _LoginAccountState extends State<LoginAccount> {
             ),
             SizedBox(width: 5),
             Text(
-              'KartWise',
+              'PeerPlaza',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: Theme.of(context).primaryColor,
                 fontSize: 25,
@@ -86,7 +85,7 @@ class _LoginAccountState extends State<LoginAccount> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Text(
-                    'Everything you need to buy and sell on campus is just a sign in away',
+                    'Everything you need to buy and sell on campus is just a login away',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                     textDirection: TextDirection.ltr,
@@ -107,6 +106,7 @@ class _LoginAccountState extends State<LoginAccount> {
                     }
                     return null;
                   },
+                  readOnly: false,
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
@@ -124,6 +124,7 @@ class _LoginAccountState extends State<LoginAccount> {
                   keyboardType: TextInputType.text,
                   obscureText: true,
                   labelTextStyle: Theme.of(context).textTheme.bodySmall,
+                  readOnly: false,
                 ),
                 SizedBox(width: 10),
                 BlocConsumer<AuthBloc, AuthState>(
@@ -143,7 +144,11 @@ class _LoginAccountState extends State<LoginAccount> {
                         SnackBar(
                           content: Text(
                             state.message,
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: DefaultColors.whiteText,
+                                ),
                             textAlign: TextAlign.center,
                           ),
                           backgroundColor: DefaultColors.success,
@@ -194,9 +199,13 @@ class _LoginAccountState extends State<LoginAccount> {
                             ),
                             child: Text(
                               state.errorMessage,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodySmall?.copyWith(fontSize: 12),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: DefaultColors.whiteText,
+                                    backgroundColor: DefaultColors.danger,
+                                  ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
