@@ -1,3 +1,4 @@
+import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,13 @@ class CustomError extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(message, style: Theme.of(context).textTheme.titleMedium),
-          TextButton(onPressed: onRetry, child: const Text('Try Again')),
+          SizedBox(height: 20),
+          Button(
+            onPressed: onRetry,
+            buttonText: 'Try Again',
+            isIconButton: false,
+            buttonColor: DefaultColors.gray,
+          ),
         ],
       ),
     );

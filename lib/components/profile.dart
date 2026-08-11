@@ -118,7 +118,7 @@ class Profile extends StatelessWidget {
 
           _buildSectionCard(
             context: context,
-            title: 'SECURITY & PREFERENCES',
+            title: 'SECURITY',
             items: [
               _buildActionItem(
                 context: context,
@@ -127,13 +127,6 @@ class Profile extends StatelessWidget {
                 onTap: () {
                   Navigator.pushNamed(context, '/update_password');
                 },
-              ),
-              const Divider(height: 1, indent: 56),
-              _buildActionItem(
-                context: context,
-                icon: Icons.notifications_none_outlined,
-                label: 'Notification Settings',
-                onTap: () {},
               ),
             ],
           ),

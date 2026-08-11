@@ -1,5 +1,6 @@
 import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
+import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
 import 'package:campus_cart/features/auth/domain/entities/login_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/otp_entity.dart';
@@ -21,6 +22,10 @@ abstract class AuthRepository {
 
   Future<UserProfileModel> getUserProfile();
 
+  Future<PasswordUpdateModel> updatePassword(
+    String currentPassword,
+    String newPassword,
+  );
   Future<UserProfileModel> updateUserProfile(String university);
 
   Future<EmailUpdateModel> updateEmail(String currentEmail, String newEmail);

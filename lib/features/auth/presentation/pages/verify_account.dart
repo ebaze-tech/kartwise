@@ -30,9 +30,10 @@ class _VerifyAccountState extends State<VerifyAccount> {
   void _onVerifyEmail() {
     final pin = _otpController.text.trim();
     if (pin.isEmpty || pin.length != 6) {
-      CustomSnackBar(
+      CustomSnackBar.show(
         message: 'Please enter the complete 6-digit code.',
         context: context,
+        isError: true,
       );
     } else {
       print('Entered OTP: $pin');
@@ -175,15 +176,20 @@ class _VerifyAccountState extends State<VerifyAccount> {
                   },
                   listener: (context, state) {
                     if (state is AuthSuccess) {
-                      CustomSnackBar(message: state.message, context: context);
+                      CustomSnackBar.show(
+                        message: state.message,
+                        context: context,
+                        isError: false,
+                      );
                       Navigator.pushReplacementNamed(
                         context,
                         '/signin_account',
                       );
                     } else if (state is AuthFailure) {
-                      CustomSnackBar(
+                      CustomSnackBar.show(
                         message: state.errorMessage,
                         context: context,
+                        isError: true,
                       );
                     }
                   },

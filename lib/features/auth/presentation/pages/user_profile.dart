@@ -1,3 +1,4 @@
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/components/error.dart';
 import 'package:campus_cart/components/profile.dart';
 import 'package:campus_cart/components/snackbar.dart';
@@ -31,6 +32,12 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/business_owner_dashboard');
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         iconTheme: const IconThemeData(color: DefaultColors.background),
         backgroundColor: DefaultColors.primary,
         centerTitle: true,
@@ -48,14 +55,22 @@ class _UserProfileState extends State<UserProfile> {
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is UserProfileError) {
-                CustomSnackBar(message: state.errorMessage, context: context);
+                CustomSnackBar.show(
+                  message: state.errorMessage,
+                  context: context,
+                  isError: true,
+                );
               }
             },
           ),
           BlocListener<BusinessBloc, BusinessState>(
             listener: (context, state) {
               if (state is BusinessError) {
-                CustomSnackBar(message: state.errorMessage, context: context);
+                CustomSnackBar.show(
+                  message: state.errorMessage,
+                  context: context,
+                  isError: true,
+                );
               }
             },
           ),
@@ -66,7 +81,8 @@ class _UserProfileState extends State<UserProfile> {
               builder: (context, businessState) {
                 if (authState is UserProfileLoading ||
                     businessState is BusinessLoading) {
-                  return const Center(child: GradientSpinner(size: 50));
+                  return AnimatedLoadingPage(message: 'Loading profile...');
+                  // return const Center(child: GradientSpinner(size: 50));
                 }
 
                 if (authState is UserProfileLoaded &&

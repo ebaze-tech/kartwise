@@ -1,3 +1,4 @@
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
@@ -39,7 +40,9 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
             Navigator.pushReplacementNamed(context, '/register_business');
           }
         },
-        child: const Center(child: GradientSpinner(size: 50)),
+        child: const AnimatedLoadingPage(
+          message: 'Loading business dashboard...',
+        ),
       ),
     );
   }

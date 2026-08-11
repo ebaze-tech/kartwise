@@ -127,7 +127,6 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                   readOnly: false,
                 ),
                 CustomFormField(
@@ -142,7 +141,6 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   keyboardType: TextInputType.text,
                   obscureText: false,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                   readOnly: false,
                 ),
                 SizedBox(width: 10),
@@ -158,7 +156,6 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   keyboardType: TextInputType.text,
                   obscureText: false,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                   readOnly: false,
                 ),
                 CustomDropdownField<String>(
@@ -166,16 +163,10 @@ class _CreateAccountState extends State<CreateAccount> {
                   value: _selectedRole,
                   icon: Icons.work,
                   items: const [
-                    DropdownMenuItem(
-                      value: 'BUYER',
-                      child: Text('Buyer', style: TextStyle(fontSize: 13)),
-                    ),
+                    DropdownMenuItem(value: 'BUYER', child: Text('Buyer')),
                     DropdownMenuItem(
                       value: 'BUSINESS_OWNER',
-                      child: Text(
-                        'Business Owner',
-                        style: TextStyle(fontSize: 13),
-                      ),
+                      child: Text('Business Owner'),
                     ),
                   ],
                   onChanged: (value) {
@@ -212,9 +203,8 @@ class _CreateAccountState extends State<CreateAccount> {
                   readOnly: false,
                   keyboardType: TextInputType.visiblePassword,
                   obscureText: true,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                 ),
-                SizedBox(height: 5),
+                SizedBox(height: 20),
                 BlocConsumer<AuthBloc, AuthState>(
                   builder: (context, state) {
                     if (state is AuthLoading) {
@@ -223,7 +213,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     return Column(
                       children: [
                         Button(
-                          buttonText: "Create Account",
+                          buttonText: "Sign Up",
                           isIconButton: false,
                           onPressed: _onRegister,
                         ),
@@ -243,7 +233,7 @@ class _CreateAccountState extends State<CreateAccount> {
                                 );
                               },
                               child: Text(
-                                'Log In',
+                                'Sign In',
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: DefaultColors.primary,
@@ -258,15 +248,20 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   listener: (context, state) {
                     if (state is AuthSuccess) {
-                      CustomSnackBar(message: state.message, context: context);
+                      CustomSnackBar.show(
+                        message: state.message,
+                        context: context,
+                        isError: false,
+                      );
                       Navigator.pushReplacementNamed(
                         context,
                         '/verify_account',
                       );
                     } else if (state is AuthFailure) {
-                      CustomSnackBar(
+                      CustomSnackBar.show(
                         message: state.errorMessage,
                         context: context,
+                        isError: true,
                       );
                     }
                   },

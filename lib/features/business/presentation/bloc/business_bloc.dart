@@ -1,6 +1,6 @@
-import 'package:campus_cart/features/business/domain/usecases/business_categories_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_update_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_usecase.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
@@ -9,19 +9,19 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
   final BusinessRegistrationUseCase _businessRegistrationUseCase;
-  final BusinessCategoriesUseCase _getBusinessCategoriesUseCase;
+  final BusinessUpdateUsecase _businessUpdateUseCase;
   final BusinessProductsUsecase _getBusinessProductsUseCase;
   final BusinessUseCase _getBusinessUseCase;
   final _storage = FlutterSecureStorage();
 
   BusinessBloc({
     required this._businessRegistrationUseCase,
-    required this._getBusinessCategoriesUseCase,
+    required this._businessUpdateUseCase,
     required this._getBusinessProductsUseCase,
     required this._getBusinessUseCase,
   }) : super(BusinessInitial()) {
     on<CreateBusinessEvent>(_onCreateBusiness);
-    on<GetBusinessCategoriesEvent>(_onGetBusinessCategories);
+    on<UpdateBusinessEvent>(_onUpdateBusiness);
     on<GetLocalBusinessEvent>(_onGetLocalBusiness);
     on<GetBusinessProductsEvent>(_onGetBusinessProducts);
     on<GetBusinessEvent>(_onGetBusiness);
@@ -56,6 +56,42 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
       emit(BusinessLoaded(message: response.message, data: response.data));
     } catch (e) {
       emit(BusinessError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onUpdateBusiness(
+    UpdateBusinessEvent event,
+    Emitter<BusinessState> emit,
+  ) async {
+    emit(BusinessUpdateLoading());
+    try {
+      final response = await _businessUpdateUseCase.call(
+        event.id,
+        event.name,
+        event.description,
+        event.emailAddress,
+        event.phoneNumber,
+        event.categoryName,
+        event.address,
+        event.isActive,
+        event.bannerImage,
+      );
+
+      await _storage.write(key: 'businessId', value: response.data.id);
+      await _storage.write(key: 'businessName', value: response.data.name);
+      await _storage.write(
+        key: 'businessEmail',
+        value: response.data.emailAddress,
+      );
+      await _storage.write(
+        key: 'businessPhone',
+        value: response.data.phoneNumber,
+      );
+      emit(
+        BusinessUpdateLoaded(message: response.message, data: response.data),
+      );
+    } catch (e) {
+      emit(BusinessUpdateError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 
@@ -113,21 +149,6 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         emit(BusinessError(errorMessage: 'No local business data found.'));
       }
     } catch (e) {}
-  }
-
-  Future<void> _onGetBusinessCategories(
-    GetBusinessCategoriesEvent event,
-    Emitter<BusinessState> emit,
-  ) async {
-    emit(BusinessCategoryLoading());
-    try {
-      final response = await _getBusinessCategoriesUseCase.call();
-      emit(
-        BusinessCategoryLoaded(message: response.message, data: response.data),
-      );
-    } catch (e) {
-      emit(BusinessCategoryError(errorMessage: _getCleanErrorMessage(e)));
-    }
   }
 
   Future<void> _onGetBusinessProducts(

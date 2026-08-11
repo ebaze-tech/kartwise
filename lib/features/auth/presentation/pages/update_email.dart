@@ -1,7 +1,6 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/form.dart';
 import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
@@ -54,7 +53,13 @@ class _UpdateEmailState extends State<UpdateEmail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: DefaultColors.background),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/user_profile');
+          },
+        ),
+        iconTheme: const IconThemeData(color: DefaultColors.background),
         backgroundColor: DefaultColors.primary,
         title: Text(
           'Update Email Address',
@@ -67,70 +72,71 @@ class _UpdateEmailState extends State<UpdateEmail> {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(height: 20),
-              CustomFormField(
-                controller: _currentEmailController,
-                labelText: "Current Email",
-                validator: null,
-                keyboardType: TextInputType.emailAddress,
-                obscureText: false,
-                labelTextStyle: Theme.of(context).textTheme.bodySmall,
-                icon: Icons.email_rounded,
-                readOnly: true,
-              ),
-              CustomFormField(
-                controller: _newEmailController,
-                labelText: "New Email",
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your preferred email address';
-                  }
-                  if (!value.contains("@")) {
-                    return "Please input a valid email";
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.emailAddress,
-                obscureText: false,
-                labelTextStyle: Theme.of(context).textTheme.bodySmall,
-                icon: Icons.email_rounded,
-                readOnly: false,
-              ),
-              SizedBox(height: 10),
-              BlocConsumer<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state is RequestEmailUpdateLoading) {
-                    return GradientSpinner(size: 50);
-                  }
-
-                  return Button(
-                    buttonText: "Request Email Update",
-                    isIconButton: false,
-                    onPressed: _updateEmail,
-                  );
-                },
-                listener: (context, state) {
-                  if (state is RequestEmailUpdateSuccess) {
-                    CustomSnackBar(message: state.message, context: context);
-                    Navigator.pushNamed(
-                      context,
-                      '/confirm_email_update',
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                CustomFormField(
+                  controller: _currentEmailController,
+                  labelText: "Current Email",
+                  validator: null,
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: false,
+                  icon: Icons.email_rounded,
+                  readOnly: true,
+                ),
+                CustomFormField(
+                  controller: _newEmailController,
+                  labelText: "New Email",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your preferred email address';
+                    }
+                    if (!value.contains("@")) {
+                      return "Please input a valid email";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: false,
+                  icon: Icons.email_rounded,
+                  readOnly: false,
+                ),
+                const SizedBox(height: 10),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is RequestEmailUpdateSuccess) {
+                      CustomSnackBar.show(
+                        message: state.message,
+                        context: context,
+                        isError: false,
+                      );
+                      Navigator.pushNamed(context, '/confirm_email_update');
+                    } else if (state is RequestEmailUpdateError) {
+                      CustomSnackBar.show(
+                        message: state.errorMessage,
+                        context: context,
+                        isError: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    final isLoading = state is RequestEmailUpdateLoading;
+                    return Button(
+                      buttonText: isLoading
+                          ? "Requesting..."
+                          : "Request Email Update",
+                      isIconButton: false,
+                      onPressed: isLoading ? () {} : _updateEmail,
                     );
-                  } else if (state is RequestEmailUpdateError) {
-                    CustomSnackBar(
-                      message: state.errorMessage,
-                      context: context,
-                    );
-                  }
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

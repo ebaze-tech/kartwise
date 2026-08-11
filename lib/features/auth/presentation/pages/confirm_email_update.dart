@@ -29,9 +29,10 @@ class _ConfirmEmailUpdateState extends State<ConfirmEmailUpdate> {
   void _onVerifyEmail() {
     final pin = _otpController.text.trim();
     if (pin.isEmpty || pin.length != 6) {
-      CustomSnackBar(
+      CustomSnackBar.show(
         message: 'Please enter the complete 6-digit code.',
         context: context,
+        isError: true,
       );
     } else {
       print('Entered OTP: $pin');
@@ -116,15 +117,17 @@ class _ConfirmEmailUpdateState extends State<ConfirmEmailUpdate> {
                 },
                 listener: (context, state) {
                   if (state is ConfirmEmailUpdateSuccess) {
-                    CustomSnackBar(message: state.message, context: context);
-                    Navigator.pushNamed(
-                      context,
-                      '/user_profile'
+                    CustomSnackBar.show(
+                      message: state.message,
+                      context: context,
+                      isError: false,
                     );
+                    Navigator.pushNamed(context, '/user_profile');
                   } else if (state is ConfirmEmailUpdateError) {
-                    CustomSnackBar(
+                    CustomSnackBar.show(
                       message: state.errorMessage,
                       context: context,
+                      isError: true,
                     );
                   }
                 },

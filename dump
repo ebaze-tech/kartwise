@@ -1,0 +1,60 @@
+                    BlocBuilder<BusinessCategoryBloc, BusinessCategoryState>(
+                        builder: (context, categoryState) {
+                          if (categoryState is BusinessCategoryLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (categoryState is BusinessCategoryLoaded) {
+                            final categories = categoryState.data ?? [];
+
+                            // Ensure the _selectedCategory matches one of the fetched categories
+                            final isValidCategory =
+                                _selectedCategory != null &&
+                                categories.any(
+                                  (cat) => cat.name == _selectedCategory,
+                                );
+
+                            return DropdownButtonFormField<String>(
+                              value: isValidCategory ? _selectedCategory : null,
+                              decoration: InputDecoration(
+                                labelText: 'Business Category',
+                                labelStyle: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium,
+                                prefixIcon: const Icon(
+                                  Icons.category,
+                                  color: DefaultColors.primary,
+                                ),
+                              ),
+                              items: categories.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value: category.name,
+                                  child: Text(category.name),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedCategory = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a business category';
+                                }
+                                return null;
+                              },
+                            );
+                          }
+
+                          if (categoryState is BusinessCategoryError) {
+                            return Text(
+                              'Failed to load categories',
+                              style: TextStyle(color: DefaultColors.danger),
+                            );
+                          }
+
+                          return const SizedBox.shrink();
+                        },
+                      ),

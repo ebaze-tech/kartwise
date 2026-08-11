@@ -1,7 +1,6 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/form.dart';
 import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
@@ -38,7 +37,13 @@ class _UpdateUniversityState extends State<UpdateUniversity> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: DefaultColors.background),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/user_profile');
+          },
+        ),
+        iconTheme: const IconThemeData(color: DefaultColors.background),
         backgroundColor: DefaultColors.primary,
         title: Text(
           'Update Details',
@@ -51,64 +56,58 @@ class _UpdateUniversityState extends State<UpdateUniversity> {
         ),
         centerTitle: true,
       ),
-
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            // SizedBox(height: 30),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  CustomFormField(
-                    controller: _universityController,
-                    labelText: "Enter University Name",
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Enter your university's name";
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.text,
-                    obscureText: false,
-                    labelTextStyle: Theme.of(context).textTheme.bodySmall,
-                    icon: Icons.school,
-                    readOnly: false,
-                  ),
-                  SizedBox(height: 10),
-                  BlocConsumer<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      if (state is UpdateUniversityLoading) {
-                        return GradientSpinner(size: 50);
-                      }
-
-                      return Button(
-                        buttonText: "Done",
-                        isIconButton: false,
-                        onPressed: _updateUniversity,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CustomFormField(
+                  controller: _universityController,
+                  labelText: "Enter University Name",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Enter your university's name";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.text,
+                  obscureText: false,
+                  icon: Icons.school,
+                  readOnly: false,
+                ),
+                const SizedBox(height: 32),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is UpdateUniversitySuccess) {
+                      CustomSnackBar.show(
+                        message: state.message,
+                        context: context,
+                        isError: false,
                       );
-                    },
-                    listener: (context, state) {
-                      if (state is UpdateUniversitySuccess) {
-                        CustomSnackBar(
-                          message: state.message,
-                          context: context,
-                        );
-                        Navigator.pushNamed(context, '/user_profile');
-                      } else if (state is UpdateUniversityError) {
-                        CustomSnackBar(
-                          message: state.errorMessage,
-                          context: context,
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
+                      Navigator.pushNamed(context, '/user_profile');
+                    } else if (state is UpdateUniversityError) {
+                      CustomSnackBar.show(
+                        message: state.errorMessage,
+                        context: context,
+                        isError: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    final isLoading = state is UpdateUniversityLoading;
+                    return Button(
+                      buttonText: isLoading ? "Updating..." : "Done",
+                      isIconButton: false,
+                      onPressed: isLoading ? () {} : _updateUniversity,
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

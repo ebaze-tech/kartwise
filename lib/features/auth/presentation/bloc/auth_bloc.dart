@@ -1,6 +1,7 @@
 import 'package:campus_cart/features/auth/domain/usecases/confirm_email_update_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_password_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,6 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RequestEmailUpdateUsecase requestEmailUpdateUsecase;
   final ConfirmEmailUpdateUsecase confirmEmailUpdateUsecase;
   final UpdateProfileUseCase updateProfileUsecase;
+  final UpdatePasswordUsecase updatePasswordUsecase;
   final _storage = FlutterSecureStorage();
 
   AuthBloc({
@@ -31,6 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.requestEmailUpdateUsecase,
     required this.confirmEmailUpdateUsecase,
     required this.updateProfileUsecase,
+    required this.updatePasswordUsecase,
   }) : super(AuthInitial()) {
     on<RegisterEvent>(_onRegister);
     on<LoginEvent>(_onLogin);
@@ -42,6 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UpdateUniversityEvent>(_onUpdateUserProfile);
     on<RequestEmailUpdateEvent>(_onRequestEmailUpdate);
     on<ConfirmEmailUpdateEvent>(_onConfirmEmailUpdate);
+    on<UpdatePasswordEvent>(_onUpdatePassword);
   }
 
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
@@ -127,6 +131,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(ConfirmEmailUpdateSuccess(message: response.message));
     } catch (e) {
       emit(ConfirmEmailUpdateError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onUpdatePassword(
+    UpdatePasswordEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(UpdateUserPasswordLoading());
+    try {
+      final response = await updatePasswordUsecase.call(
+        event.currentPassword,
+        event.newPassword,
+      );
+      emit(UpdateUserPasswordSuccess(message: response.message));
+    } catch (e) {
+      emit(UpdateUserPasswordError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 

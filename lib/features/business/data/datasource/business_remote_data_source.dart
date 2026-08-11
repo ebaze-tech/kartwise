@@ -5,11 +5,9 @@ import 'package:campus_cart/features/business/data/models/business_categories_mo
 import 'package:campus_cart/features/business/data/models/business_model.dart';
 import 'package:campus_cart/features/business/data/models/business_products_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class BusinessRemoteDataSource {
   final ApiClient apiClient;
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   BusinessRemoteDataSource({required this.apiClient});
 
@@ -46,6 +44,49 @@ class BusinessRemoteDataSource {
 
       final response = await apiClient.dio.post(
         '/business/setup',
+        data: formData,
+      );
+      print(response.data);
+      return BusinessModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<BusinessModel> updateBusiness({
+    required String id,
+    required String name,
+    required String description,
+    required String emailAddress,
+    required String phoneNumber,
+    String? businessCategoryName,
+    required String address,
+    File? bannerImage,
+    required bool isActive,
+  }) async {
+    try {
+      Map<String, dynamic> formDataMap = {
+        'name': name,
+        'description': description,
+        'emailAddress': emailAddress,
+        'phoneNumber': phoneNumber,
+        'businessCategory': businessCategoryName,
+        'address': address,
+        'isActive': isActive,
+      };
+      print(formDataMap);
+
+      if (bannerImage != null) {
+        formDataMap['bannerImage'] = await MultipartFile.fromFile(
+          bannerImage.path,
+          filename: bannerImage.path.split('/').last,
+        );
+      }
+
+      FormData formData = FormData.fromMap(formDataMap);
+
+      final response = await apiClient.dio.patch(
+        '/business/update/$id',
         data: formData,
       );
       print(response.data);
