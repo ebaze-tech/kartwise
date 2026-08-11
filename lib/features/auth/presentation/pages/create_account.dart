@@ -1,6 +1,7 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/dropdown.dart';
 import 'package:campus_cart/components/form.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
@@ -126,7 +127,6 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                   readOnly: false,
                 ),
                 CustomFormField(
@@ -141,7 +141,6 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   keyboardType: TextInputType.text,
                   obscureText: false,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                   readOnly: false,
                 ),
                 SizedBox(width: 10),
@@ -157,7 +156,6 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   keyboardType: TextInputType.text,
                   obscureText: false,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                   readOnly: false,
                 ),
                 CustomDropdownField<String>(
@@ -165,16 +163,10 @@ class _CreateAccountState extends State<CreateAccount> {
                   value: _selectedRole,
                   icon: Icons.work,
                   items: const [
-                    DropdownMenuItem(
-                      value: 'BUYER',
-                      child: Text('Buyer', style: TextStyle(fontSize: 13)),
-                    ),
+                    DropdownMenuItem(value: 'BUYER', child: Text('Buyer')),
                     DropdownMenuItem(
                       value: 'BUSINESS_OWNER',
-                      child: Text(
-                        'Business Owner',
-                        style: TextStyle(fontSize: 13),
-                      ),
+                      child: Text('Business Owner'),
                     ),
                   ],
                   onChanged: (value) {
@@ -211,9 +203,8 @@ class _CreateAccountState extends State<CreateAccount> {
                   readOnly: false,
                   keyboardType: TextInputType.visiblePassword,
                   obscureText: true,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                 ),
-                SizedBox(height: 5),
+                SizedBox(height: 20),
                 BlocConsumer<AuthBloc, AuthState>(
                   builder: (context, state) {
                     if (state is AuthLoading) {
@@ -222,7 +213,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     return Column(
                       children: [
                         Button(
-                          buttonText: "Create Account",
+                          buttonText: "Sign Up",
                           isIconButton: false,
                           onPressed: _onRegister,
                         ),
@@ -242,7 +233,7 @@ class _CreateAccountState extends State<CreateAccount> {
                                 );
                               },
                               child: Text(
-                                'Log In',
+                                'Sign In',
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: DefaultColors.primary,
@@ -257,65 +248,20 @@ class _CreateAccountState extends State<CreateAccount> {
                   },
                   listener: (context, state) {
                     if (state is AuthSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            state.message,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: DefaultColors.whiteText,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          backgroundColor: DefaultColors.success,
-                        ),
+                      CustomSnackBar.show(
+                        message: state.message,
+                        context: context,
+                        isError: false,
                       );
                       Navigator.pushReplacementNamed(
                         context,
                         '/verify_account',
                       );
                     } else if (state is AuthFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          padding: EdgeInsets.zero,
-                          margin: const EdgeInsets.all(16),
-                          duration: const Duration(seconds: 4),
-                          content: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: DefaultColors.danger,
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: DefaultColors.neutral,
-                                  blurRadius: 8.0,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: DefaultColors.neutral,
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              state.errorMessage,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: DefaultColors.whiteText,
-                                    backgroundColor: DefaultColors.danger,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
+                      CustomSnackBar.show(
+                        message: state.errorMessage,
+                        context: context,
+                        isError: true,
                       );
                     }
                   },

@@ -1,6 +1,6 @@
 import 'package:campus_cart/components/button.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
-import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
@@ -29,18 +29,10 @@ class _ConfirmEmailUpdateState extends State<ConfirmEmailUpdate> {
   void _onVerifyEmail() {
     final pin = _otpController.text.trim();
     if (pin.isEmpty || pin.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please enter the complete 6-digit code.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: DefaultColors.whiteText,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          backgroundColor: DefaultColors.danger,
-        ),
+      CustomSnackBar.show(
+        message: 'Please enter the complete 6-digit code.',
+        context: context,
+        isError: true,
       );
     } else {
       print('Entered OTP: $pin');
@@ -125,35 +117,17 @@ class _ConfirmEmailUpdateState extends State<ConfirmEmailUpdate> {
                 },
                 listener: (context, state) {
                   if (state is ConfirmEmailUpdateSuccess) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          state.message,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: DefaultColors.whiteText,
-                              ),
-                          textAlign: TextAlign.center,
-                        ),
-                        backgroundColor: DefaultColors.success,
-                      ),
+                    CustomSnackBar.show(
+                      message: state.message,
+                      context: context,
+                      isError: false,
                     );
-                    Navigator.pushReplacementNamed(context, '/user_profile');
+                    Navigator.pushNamed(context, '/user_profile');
                   } else if (state is ConfirmEmailUpdateError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          state.errorMessage,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: DefaultColors.whiteText,
-                              ),
-                          textAlign: TextAlign.center,
-                        ),
-                        backgroundColor: DefaultColors.danger,
-                      ),
+                    CustomSnackBar.show(
+                      message: state.errorMessage,
+                      context: context,
+                      isError: true,
                     );
                   }
                 },

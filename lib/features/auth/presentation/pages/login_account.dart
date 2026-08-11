@@ -1,5 +1,6 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/form.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
@@ -77,7 +78,7 @@ class _LoginAccountState extends State<LoginAccount> {
               children: [
                 SizedBox(height: 20),
                 Text(
-                  'Login to Your Account',
+                  'Welcome Back',
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -85,7 +86,7 @@ class _LoginAccountState extends State<LoginAccount> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Text(
-                    'Everything you need to buy and sell on campus is just a login away',
+                    'Sign in and get back to shopping, selling, and connecting',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                     textDirection: TextDirection.ltr,
@@ -109,7 +110,6 @@ class _LoginAccountState extends State<LoginAccount> {
                   readOnly: false,
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
                 ),
                 CustomFormField(
                   icon: Icons.lock,
@@ -123,36 +123,27 @@ class _LoginAccountState extends State<LoginAccount> {
                   },
                   keyboardType: TextInputType.text,
                   obscureText: true,
-                  labelTextStyle: Theme.of(context).textTheme.bodySmall,
+
                   readOnly: false,
                 ),
-                SizedBox(width: 10),
+                SizedBox(height: 20),
                 BlocConsumer<AuthBloc, AuthState>(
                   builder: (context, state) {
                     if (state is AuthLoading) {
                       return GradientSpinner(size: 50.0);
                     }
                     return Button(
-                      buttonText: "Login",
+                      buttonText: "Sign In",
                       isIconButton: false,
                       onPressed: _onLogin,
                     );
                   },
                   listener: (context, state) {
                     if (state is AuthSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            state.message,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: DefaultColors.whiteText,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          backgroundColor: DefaultColors.success,
-                        ),
+                      CustomSnackBar.show(
+                        message: state.message,
+                        context: context,
+                        isError: false,
                       );
                       if (state.role == "BUYER") {
                         Navigator.pushNamedAndRemoveUntil(
@@ -168,47 +159,10 @@ class _LoginAccountState extends State<LoginAccount> {
                         );
                       }
                     } else if (state is AuthFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          padding: EdgeInsets.zero,
-                          margin: const EdgeInsets.all(16),
-                          duration: const Duration(seconds: 4),
-                          content: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: DefaultColors.danger,
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 8.0,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: DefaultColors.neutral,
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              state.errorMessage,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: DefaultColors.whiteText,
-                                    backgroundColor: DefaultColors.danger,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
+                      CustomSnackBar.show(
+                        message: state.errorMessage,
+                        context: context,
+                        isError: true,
                       );
                     }
                   },
@@ -230,7 +184,7 @@ class _LoginAccountState extends State<LoginAccount> {
                         );
                       },
                       child: Text(
-                        'Register',
+                        'Sign Up',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: DefaultColors.primary,
                           fontWeight: FontWeight.bold,

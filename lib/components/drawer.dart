@@ -104,11 +104,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ),
                 _buildDrawerItem(
                   context: context,
-                  icon: Icons.store_outlined,
-                  title: 'Store Settings',
+                  icon: Icons.info,
+                  title: 'Analytics',
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushNamed(context, '/store_settings');
+                    // Navigator.pushNamed(context, '/orders');
                   },
                 ),
                 _buildDrawerItem(
@@ -147,7 +147,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             },
             buttonColor: DefaultColors.danger,
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 45),
         ],
       ),
     );

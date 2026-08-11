@@ -81,3 +81,19 @@ class UpdateUniversityError extends AuthState {
 
   UpdateUniversityError({required this.errorMessage});
 }
+
+class UpdateUserPassword extends AuthState {}
+
+class UpdateUserPasswordLoading extends AuthState {}
+
+class UpdateUserPasswordSuccess extends AuthState {
+  final String message;
+
+  UpdateUserPasswordSuccess({required this.message});
+}
+
+class UpdateUserPasswordError extends AuthState {
+  final String errorMessage;
+
+  UpdateUserPasswordError({required this.errorMessage});
+}

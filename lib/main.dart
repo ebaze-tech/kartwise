@@ -8,6 +8,7 @@ import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_password_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/update_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
 import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
@@ -21,12 +22,15 @@ import 'package:campus_cart/features/auth/presentation/pages/update_password.dar
 import 'package:campus_cart/features/auth/presentation/pages/update_university.dart';
 import 'package:campus_cart/features/auth/presentation/pages/user_profile.dart';
 import 'package:campus_cart/features/business/data/datasource/business_remote_data_source.dart';
+import 'package:campus_cart/features/business/domain/repositories/business_category_impl.dart';
 import 'package:campus_cart/features/business/domain/repositories/business_repository_impl.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_categories_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_update_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_usecase.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_category_bloc.dart';
 import 'package:campus_cart/features/business/presentation/cubit/activate_business.dart';
 import 'package:campus_cart/features/business/presentation/pages/business_created.dart';
 import 'package:campus_cart/features/business/presentation/pages/business_dashboard.dart';
@@ -49,6 +53,7 @@ Future<void> main() async {
 
   late AuthBloc authBloc;
   late BusinessBloc businessBloc;
+  late BusinessCategoryBloc businessCategoryBloc;
 
   final apiClient = ApiClient(
     onUnauthenticated: () {
@@ -66,6 +71,9 @@ Future<void> main() async {
   final businessRepository = BusinessRepositoryImpl(
     businessRemoteDataSource: businessRemoteDataSource,
   );
+  final businessCategoryRepository = BusinessCategoryImpl(
+    businessRemoteDataSource: businessRemoteDataSource,
+  );
 
   authBloc = AuthBloc(
     registerUsecase: RegisterUsecase(authRepository: authRepository),
@@ -78,30 +86,51 @@ Future<void> main() async {
     ),
     confirmEmailUpdateUsecase: ConfirmEmailUpdateUsecase(
       authRepository: authRepository,
-    ),updateProfileUsecase: UpdateProfileUseCase(authRepository: authRepository)
+    ),
+    updateProfileUsecase: UpdateProfileUseCase(authRepository: authRepository),
+    updatePasswordUsecase: UpdatePasswordUsecase(authRemoteDataSource: authRemoteDataSource)
   );
 
   businessBloc = BusinessBloc(
     businessRegistrationUseCase: BusinessRegistrationUseCase(
       repository: businessRepository,
     ),
-    getBusinessCategoriesUseCase: BusinessCategoriesUseCase(
-      repository: businessRepository,
+    businessUpdateUseCase: BusinessUpdateUsecase(
+      businessRepository: businessRepository,
     ),
+
     getBusinessProductsUseCase: BusinessProductsUsecase(
       repository: businessRepository,
     ),
     getBusinessUseCase: BusinessUseCase(repository: businessRepository),
   );
 
-  runApp(MyApp(authBloc: authBloc, businessBloc: businessBloc));
+  businessCategoryBloc = BusinessCategoryBloc(
+    getBusinessCategoriesUseCase: BusinessCategoriesUseCase(
+      repository: businessCategoryRepository,
+    ),
+  );
+
+  runApp(
+    MyApp(
+      authBloc: authBloc,
+      businessBloc: businessBloc,
+      businessCategoryBloc: businessCategoryBloc,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   final AuthBloc authBloc;
   final BusinessBloc businessBloc;
+  final BusinessCategoryBloc businessCategoryBloc;
 
-  const MyApp({super.key, required this.authBloc, required this.businessBloc});
+  const MyApp({
+    super.key,
+    required this.authBloc,
+    required this.businessBloc,
+    required this.businessCategoryBloc,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +138,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider.value(value: authBloc..add(CheckAuthStatusEvent())),
         BlocProvider.value(value: businessBloc),
+        BlocProvider.value(value: businessCategoryBloc),
         BlocProvider<ActiveBusinessCubit>(
           create: (context) => ActiveBusinessCubit(),
         ),

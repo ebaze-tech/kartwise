@@ -3,6 +3,7 @@ import 'package:campus_cart/features/auth/data/models/confirm_email_update_model
 import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/login_model.dart';
 import 'package:campus_cart/features/auth/data/models/otp_model.dart';
+import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/registration_model.dart';
 import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
 import 'package:dio/dio.dart';
@@ -32,6 +33,7 @@ class AuthRemoteDataSource {
           'role': role,
         },
       );
+      print(response.data);
       return RegistrationModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -47,7 +49,24 @@ class AuthRemoteDataSource {
         '/accounts/signin',
         data: {'email': email, 'password': password},
       );
+      print(response.data);
       return LoginModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<PasswordUpdateModel> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await apiClient.dio.patch(
+        '/accounts/change-password',
+        data: {'currentPassword': currentPassword, 'newPassword': newPassword},
+      );
+      print(response.data);
+      return PasswordUpdateModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
     }
@@ -61,6 +80,7 @@ class AuthRemoteDataSource {
         data: {'userId': userId, 'otp': otp},
       );
 
+      print(response.data);
       return OtpModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -74,6 +94,7 @@ class AuthRemoteDataSource {
         '/accounts/resend-verification',
         data: {'email': email},
       );
+      print(response.data);
       return OtpModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -83,7 +104,7 @@ class AuthRemoteDataSource {
   Future<UserProfileModel> getUserProfile() async {
     try {
       final response = await apiClient.dio.get('/accounts/me');
-
+      print(response.data);
       return UserProfileModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -96,7 +117,7 @@ class AuthRemoteDataSource {
         '/accounts/me',
         data: {'university': university},
       );
-
+      print(response.data);
       return UserProfileModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);

@@ -1,10 +1,15 @@
+import 'package:campus_cart/components/animated_loader.dart';
+import 'package:campus_cart/components/error.dart';
 import 'package:campus_cart/components/profile.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
-import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,19 +25,19 @@ class _UserProfileState extends State<UserProfile> {
   void initState() {
     super.initState();
     context.read<AuthBloc>().add(UserProfileEvent());
+    context.read<BusinessBloc>().add(GetBusinessEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    final argument = ModalRoute.of(context)?.settings.arguments;
-    BusinessEntity? business;
-
-    if (argument is BusinessEntity) {
-      business = argument;
-    }
-
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/business_owner_dashboard');
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         iconTheme: const IconThemeData(color: DefaultColors.background),
         backgroundColor: DefaultColors.primary,
         centerTitle: true,
@@ -45,90 +50,72 @@ class _UserProfileState extends State<UserProfile> {
           ),
         ),
       ),
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is UserProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                padding: EdgeInsets.zero,
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(seconds: 4),
-                content: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: DefaultColors.danger,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: DefaultColors.neutral,
-                        blurRadius: 8.0,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: DefaultColors.neutral, width: 1),
-                  ),
-                  child: Text(
-                    state.errorMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: DefaultColors.whiteText,
-                      backgroundColor: DefaultColors.danger,
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is UserProfileError) {
+                CustomSnackBar.show(
+                  message: state.errorMessage,
+                  context: context,
+                  isError: true,
+                );
+              }
+            },
+          ),
+          BlocListener<BusinessBloc, BusinessState>(
+            listener: (context, state) {
+              if (state is BusinessError) {
+                CustomSnackBar.show(
+                  message: state.errorMessage,
+                  context: context,
+                  isError: true,
+                );
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            return BlocBuilder<BusinessBloc, BusinessState>(
+              builder: (context, businessState) {
+                if (authState is UserProfileLoading ||
+                    businessState is BusinessLoading) {
+                  return AnimatedLoadingPage(message: 'Loading profile...');
+                  // return const Center(child: GradientSpinner(size: 50));
+                }
+
+                if (authState is UserProfileLoaded &&
+                    businessState is BusinessLoaded) {
+                  return Center(
+                    child: Profile(
+                      userProfileEntity: authState.data,
+                      businessEntity: businessState.data,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is UserProfileLoading) {
-            return const Center(child: GradientSpinner(size: 50));
-          }
-          if (state is UserProfileLoaded) {
-            final userProfile = state.data;
+                  );
+                }
 
-            return Center(
-              child: Profile(
-                userProfileEntity: userProfile,
-                businessEntity: business,
-              ),
-            );
-          }
-          if (state is UserProfileError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: DefaultColors.danger,
-                    size: 48,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Failed to load profile',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      context.read<AuthBloc>().add(UserProfileEvent());
-                    },
-                    child: const Text('Try Again'),
-                  ),
-                ],
-              ),
-            );
-          }
+                if (authState is UserProfileError) {
+                  return CustomError(
+                    message: 'Failed to load user profile.',
+                    onRetry: () =>
+                        context.read<AuthBloc>().add(UserProfileEvent()),
+                  );
+                }
 
-          return const SizedBox.shrink();
-        },
+                if (businessState is BusinessError) {
+                  return CustomError(
+                    message: 'Failed to load business profile.',
+                    onRetry: () =>
+                        context.read<BusinessBloc>().add(GetBusinessEvent()),
+                  );
+                }
+
+                return const SizedBox.shrink();
+              },
+            );
+          },
+        ),
       ),
     );
   }

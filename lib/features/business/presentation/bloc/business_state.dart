@@ -1,4 +1,3 @@
-import 'package:campus_cart/features/business/domain/entities/business_category_entity.dart';
 import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
 import 'package:campus_cart/features/business/domain/entities/product_entity.dart';
 
@@ -10,32 +9,30 @@ class BusinessLoading extends BusinessState {}
 
 class BusinessLoaded extends BusinessState {
   final String message;
-  final BusinessEntity? data;
+  final BusinessEntity data;
 
-  BusinessLoaded({required this.message, this.data});
+  BusinessLoaded({required this.message, required this.data});
+}
+
+class BusinessUpdateLoading extends BusinessState {}
+
+class BusinessUpdateLoaded extends BusinessState {
+  final String message;
+  final BusinessEntity data;
+
+  BusinessUpdateLoaded({required this.message, required this.data});
+}
+
+class BusinessUpdateError extends BusinessState {
+  final String errorMessage;
+
+  BusinessUpdateError({required this.errorMessage});
 }
 
 class BusinessError extends BusinessState {
   final String errorMessage;
 
   BusinessError({required this.errorMessage});
-}
-
-class BusinessCategoryInitial extends BusinessState {}
-
-class BusinessCategoryLoading extends BusinessState {}
-
-class BusinessCategoryLoaded extends BusinessState {
-  final String message;
-  final List<BusinessCategoryEntity>? data;
-
-  BusinessCategoryLoaded({required this.message, this.data});
-}
-
-class BusinessCategoryError extends BusinessState {
-  final String errorMessage;
-
-  BusinessCategoryError({required this.errorMessage});
 }
 
 class BusinessProductsInitial extends BusinessState {}
@@ -59,10 +56,12 @@ class LocalBusinessLoaded extends BusinessState {
   final String businessId;
   final String businessName;
   final String businessEmail;
+  final String businessPhone;
 
   LocalBusinessLoaded({
     required this.businessId,
     required this.businessName,
     required this.businessEmail,
+    required this.businessPhone,
   });
 }

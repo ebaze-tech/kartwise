@@ -6,7 +6,6 @@ class CustomFormField extends StatelessWidget {
   final String labelText;
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
-  final TextStyle? labelTextStyle;
   final bool obscureText;
   final IconData icon;
   final bool readOnly;
@@ -18,7 +17,6 @@ class CustomFormField extends StatelessWidget {
     required this.validator,
     required this.keyboardType,
     required this.obscureText,
-    required this.labelTextStyle,
     required this.icon,
     required this.readOnly,
   });
@@ -26,7 +24,7 @@ class CustomFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
@@ -42,7 +40,7 @@ class CustomFormField extends StatelessWidget {
             borderSide: BorderSide(color: DefaultColors.primary, width: 2.0),
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
-          labelStyle: labelTextStyle,
+          labelStyle: Theme.of(context).textTheme.bodySmall,
         ),
       ),
     );

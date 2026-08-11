@@ -66,7 +66,7 @@ class Onboarding extends StatelessWidget {
                   SizedBox(height: 20),
                   Button(
                     buttonText: "Continue",
-                    isIconButton: true,
+                    isIconButton: false,
                     onPressed: () {
                       Navigator.pushNamed(context, '/onboarding_screen_two');
                     },

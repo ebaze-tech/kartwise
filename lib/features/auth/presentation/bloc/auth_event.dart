@@ -63,3 +63,13 @@ class UpdateUniversityEvent extends AuthEvent {
 
   UpdateUniversityEvent({required this.university});
 }
+
+class UpdatePasswordEvent extends AuthEvent {
+  final String currentPassword;
+  final String newPassword;
+
+  UpdatePasswordEvent({
+    required this.currentPassword,
+    required this.newPassword,
+  });
+}

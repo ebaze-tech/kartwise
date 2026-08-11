@@ -1,6 +1,7 @@
 import 'package:campus_cart/features/auth/data/datasource/auth_remote_data_source.dart';
 import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
+import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
 import 'package:campus_cart/features/auth/domain/entities/login_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/otp_entity.dart';
@@ -32,6 +33,17 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<LoginEntity> login(String email, String password) async {
     return await authRemoteDataSource.login(email: email, password: password);
+  }
+
+  @override
+  Future<PasswordUpdateModel> updatePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    return await authRemoteDataSource.updatePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
   }
 
   @override

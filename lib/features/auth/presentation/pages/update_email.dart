@@ -1,6 +1,6 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/form.dart';
-import 'package:campus_cart/components/spinner.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
@@ -53,7 +53,13 @@ class _UpdateEmailState extends State<UpdateEmail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: DefaultColors.background),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/user_profile');
+          },
+        ),
+        iconTheme: const IconThemeData(color: DefaultColors.background),
         backgroundColor: DefaultColors.primary,
         title: Text(
           'Update Email Address',
@@ -66,119 +72,71 @@ class _UpdateEmailState extends State<UpdateEmail> {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        // child: Padding(
-        // padding: const EdgeInsets.symmetric(vertical: 15.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(height: 20),
-              CustomFormField(
-                controller: _currentEmailController,
-                labelText: "Current Email",
-                validator: null,
-                keyboardType: TextInputType.emailAddress,
-                obscureText: false,
-                labelTextStyle: Theme.of(context).textTheme.bodySmall,
-                icon: Icons.email_rounded,
-                readOnly: true,
-              ),
-              CustomFormField(
-                controller: _newEmailController,
-                labelText: "New Email",
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your preferred email address';
-                  }
-                  if (!value.contains("@")) {
-                    return "Please input a valid email";
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.emailAddress,
-                obscureText: false,
-                labelTextStyle: Theme.of(context).textTheme.bodySmall,
-                icon: Icons.email_rounded,
-                readOnly: false,
-              ),
-              SizedBox(height: 10),
-              BlocConsumer<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  if (state is RequestEmailUpdateLoading) {
-                    return GradientSpinner(size: 50);
-                  }
-
-                  return Button(
-                    buttonText: "Request Email Update",
-                    isIconButton: false,
-                    onPressed: _updateEmail,
-                  );
-                },
-                listener: (context, state) {
-                  if (state is RequestEmailUpdateSuccess) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          state.message,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: DefaultColors.whiteText,
-                              ),
-                          textAlign: TextAlign.center,
-                        ),
-                        backgroundColor: DefaultColors.success,
-                      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                CustomFormField(
+                  controller: _currentEmailController,
+                  labelText: "Current Email",
+                  validator: null,
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: false,
+                  icon: Icons.email_rounded,
+                  readOnly: true,
+                ),
+                CustomFormField(
+                  controller: _newEmailController,
+                  labelText: "New Email",
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your preferred email address';
+                    }
+                    if (!value.contains("@")) {
+                      return "Please input a valid email";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: false,
+                  icon: Icons.email_rounded,
+                  readOnly: false,
+                ),
+                const SizedBox(height: 10),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is RequestEmailUpdateSuccess) {
+                      CustomSnackBar.show(
+                        message: state.message,
+                        context: context,
+                        isError: false,
+                      );
+                      Navigator.pushNamed(context, '/confirm_email_update');
+                    } else if (state is RequestEmailUpdateError) {
+                      CustomSnackBar.show(
+                        message: state.errorMessage,
+                        context: context,
+                        isError: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    final isLoading = state is RequestEmailUpdateLoading;
+                    return Button(
+                      buttonText: isLoading
+                          ? "Requesting..."
+                          : "Request Email Update",
+                      isIconButton: false,
+                      onPressed: isLoading ? () {} : _updateEmail,
                     );
-                    Navigator.pushNamed(context, '/confirm_email_update');
-                  } else if (state is RequestEmailUpdateError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        margin: const EdgeInsets.all(16),
-                        duration: const Duration(seconds: 4),
-                        content: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: DefaultColors.danger,
-                            boxShadow: const [
-                              BoxShadow(
-                                color: DefaultColors.neutral,
-                                blurRadius: 8.0,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: DefaultColors.neutral,
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            state.errorMessage,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: DefaultColors.whiteText,
-                                  backgroundColor: DefaultColors.danger,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

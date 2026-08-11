@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/dropdown.dart';
 import 'package:campus_cart/components/form.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/components/toggle.dart';
 import 'package:campus_cart/core/theme/theme.dart';
@@ -10,6 +12,9 @@ import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_category_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_category_event.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_category_state.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
 import 'package:campus_cart/features/business/presentation/cubit/activate_business.dart';
@@ -89,7 +94,7 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
   void initState() {
     super.initState();
 
-    context.read<BusinessBloc>().add(GetBusinessCategoriesEvent());
+    context.read<BusinessCategoryBloc>().add(GetBusinessCategoriesEvent());
     context.read<AuthBloc>().add(CheckAuthStatusEvent());
   }
 
@@ -108,356 +113,276 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
         ),
         centerTitle: true,
       ),
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthFailure && state.errorMessage.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                padding: EdgeInsets.zero,
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(seconds: 4),
-                content: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: DefaultColors.danger,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: DefaultColors.neutral,
-                        blurRadius: 8.0,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: DefaultColors.neutral, width: 1),
-                  ),
-                  child: Text(
-                    state.errorMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: DefaultColors.whiteText,
-                      backgroundColor: DefaultColors.danger,
+      body: SafeArea(
+        child: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthFailure && state.errorMessage.isNotEmpty) {
+              CustomSnackBar.show(
+                message: state.errorMessage,
+                context: context,
+                isError: true,
+              );
+              Navigator.pushReplacementNamed(context, '/signin_account');
+            }
+          },
+          child: SingleChildScrollView(
+            child: SafeArea(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 10),
+                    CustomFormField(
+                      icon: Icons.business,
+                      controller: _businessNameController,
+                      labelText: "Business name",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Business name is required";
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.text,
+                      obscureText: false,
+                      readOnly: false,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            );
-
-            Navigator.pushReplacementNamed(context, '/signin_account');
-          }
-        },
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 10),
-                  CustomFormField(
-                    icon: Icons.business,
-                    controller: _businessNameController,
-                    labelText: "Business name",
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Business name is required";
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.text,
-                    obscureText: false,
-                    labelTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    readOnly: false,
-                  ),
-                  CustomFormField(
-                    icon: Icons.info,
-                    controller: _businessDescriptionController,
-                    labelText: "Business description",
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Business description is required";
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.text,
-                    obscureText: false,
-                    labelTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    readOnly: false,
-                  ),
-                  BlocConsumer<BusinessBloc, BusinessState>(
-                    listener: (context, state) {
-                      if (state is BusinessCategoryError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(state.errorMessage),
-                            backgroundColor: DefaultColors.danger,
-                          ),
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state is BusinessCategoryLoaded) {
-                        return CustomDropdownField<String>(
-                          labelText: 'Business Category',
-                          icon: Icons.category,
-                          value: _selectedCategory,
-                          items: state.data!.map((category) {
-                            return DropdownMenuItem<String>(
-                              value: category.name,
-                              child: Text(category.name),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedCategory = value;
-                            });
-                          },
-                        );
-                      }
-
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                  CustomFormField(
-                    controller: _businessAddressController,
-                    labelText: "Business address",
-                    icon: Icons.location_on,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Business address is required";
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.streetAddress,
-                    obscureText: false,
-                    labelTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    readOnly: false,
-                  ),
-                  CustomFormField(
-                    controller: _businessEmailController,
-                    labelText: "Business email address",
-                    icon: Icons.email,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Business email address is required";
-                      }
-                      if (!value.contains("@")) {
-                        return "Valid email address is required";
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.phone,
-                    obscureText: false,
-                    labelTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    readOnly: false,
-                  ),
-                  CustomFormField(
-                    controller: _businessPhoneController,
-                    labelText: "Business phone number",
-                    icon: Icons.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Business phone number is required";
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.phone,
-                    obscureText: false,
-                    labelTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    readOnly: false,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: GestureDetector(
-                      onTap: _pickBannerImage,
-                      child: Container(
-                        height: 150,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: DefaultColors.neutral.withOpacity(
-                            0.2,
-                          ), // Adjust to your theme
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: DefaultColors.neutral,
-                            width: 1,
-                            style: BorderStyle.solid,
-                          ),
-                          // If an image is selected, display it
-                          image: _bannerImage != null
-                              ? DecorationImage(
-                                  image: FileImage(_bannerImage!),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        child: _bannerImage == null
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_a_photo,
-                                    size: 40,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Tap to upload a banner image',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                ],
-                              )
-                            : Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.cancel,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _bannerImage =
-                                          null; // Allow user to remove the image
-                                    });
-                                  },
-                                ),
-                              ),
-                      ),
+                    CustomFormField(
+                      icon: Icons.description,
+                      controller: _businessDescriptionController,
+                      labelText: "Business description",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Business description is required";
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.text,
+                      obscureText: false,
+                      readOnly: false,
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 16.0,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Business Status",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(width: 10),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: CustomToggle(
-                            isActive: _isActiveController,
-                            onChanged: (value) {
-                              setState(() {
-                                _isActiveController = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  BlocConsumer<BusinessBloc, BusinessState>(
-                    builder: (context, state) {
-                      if (state is BusinessLoading) {
-                        return GradientSpinner(size: 50);
-                      }
-                      return Button(
-                        buttonText: "Create Business",
-                        isIconButton: false,
-                        onPressed: () {
-                          if (_selectedCategory != null) {
-                            _onRegisterBusiness(_selectedCategory!);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Please select a Business category",
+                    BlocConsumer<BusinessCategoryBloc, BusinessCategoryState>(
+                      listener: (context, state) {
+                        if (state is BusinessCategoryError) {
+                          CustomSnackBar.show(
+                            message: state.errorMessage,
+                            context: context,
+                            isError: true,
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        if (state is BusinessCategoryLoaded) {
+                          return CustomDropdownField<String>(
+                            labelText: 'Business Category',
+                            icon: Icons.category,
+                            value: _selectedCategory,
+                            items: state.data!.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category.name,
+                                child: Text(
+                                  category.name,
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                                backgroundColor: DefaultColors.danger,
-                              ),
-                            );
-                          }
-                        },
-                      );
-                    },
-                    listener: (context, state) {
-                      if (state is BusinessLoaded) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              state.message,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: DefaultColors.whiteText,
-                                  ),
-                              textAlign: TextAlign.center,
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCategory = value;
+                              });
+                            },
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                    CustomFormField(
+                      controller: _businessAddressController,
+                      labelText: "Business address",
+                      icon: Icons.location_on,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Business address is required";
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.streetAddress,
+                      obscureText: false,
+                      readOnly: false,
+                    ),
+                    CustomFormField(
+                      controller: _businessEmailController,
+                      labelText: "Business email address",
+                      icon: Icons.email,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Business email address is required";
+                        }
+                        if (!value.contains("@")) {
+                          return "Valid email address is required";
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.phone,
+                      obscureText: false,
+                      readOnly: false,
+                    ),
+                    CustomFormField(
+                      controller: _businessPhoneController,
+                      labelText: "Business phone number",
+                      icon: Icons.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Business phone number is required";
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.phone,
+                      obscureText: false,
+                      readOnly: false,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: GestureDetector(
+                        onTap: _pickBannerImage,
+                        child: Container(
+                          height: 150,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: DefaultColors.neutral.withValues(
+                              alpha: 0.2,
+                            ), // Adjust to your theme
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: DefaultColors.neutral,
+                              width: 1,
+                              style: BorderStyle.solid,
                             ),
-                            backgroundColor: DefaultColors.success,
+                            // If an image is selected, display it
+                            image: _bannerImage != null
+                                ? DecorationImage(
+                                    image: FileImage(_bannerImage!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
                           ),
-                        );
-                        context.read<ActiveBusinessCubit>().setActiveBusiness(
-                          state.data!.id,
-                        );
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/business_created',
-                          arguments: state.data,
-                        );
-                      } else if (state is BusinessError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.transparent,
-                            elevation: 0,
-                            padding: EdgeInsets.zero,
-                            margin: const EdgeInsets.all(16),
-                            duration: const Duration(seconds: 4),
-                            content: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color: DefaultColors.danger,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: DefaultColors.neutral,
-                                    blurRadius: 8.0,
-                                    offset: Offset(0, 3),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: DefaultColors.neutral,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Text(
-                                state.errorMessage,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      color: DefaultColors.whiteText,
-                                      backgroundColor: DefaultColors.danger,
+                          child: _bannerImage == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_a_photo,
+                                      size: 40,
+                                      color: Theme.of(context).primaryColor,
                                     ),
-                                textAlign: TextAlign.center,
-                              ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Tap to upload a banner image',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                )
+                              : Align(
+                                  alignment: Alignment.topRight,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.cancel,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _bannerImage =
+                                            null; // Allow user to remove the image
+                                      });
+                                    },
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 16.0,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Business Status",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(width: 10),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: CustomToggle(
+                              isActive: _isActiveController,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isActiveController = value;
+                                });
+                              },
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    BlocConsumer<BusinessBloc, BusinessState>(
+                      builder: (context, state) {
+                        if (state is BusinessLoading) {
+                          return const AnimatedLoadingPage(
+                            message: 'Loading...',
+                          );
+                          // return GradientSpinner(size: 50);
+                        }
+                        return Button(
+                          buttonText: "Create Business",
+                          isIconButton: false,
+                          onPressed: () {
+                            if (_selectedCategory != null) {
+                              _onRegisterBusiness(_selectedCategory!);
+                            } else {
+                              CustomSnackBar.show(
+                                message: 'Please select a business category.',
+                                context: context,
+                                isError: true,
+                              );
+                            }
+                          },
                         );
-                      }
-                    },
-                  ),
-                ],
+                      },
+                      listener: (context, state) {
+                        if (state is BusinessLoaded) {
+                          CustomSnackBar.show(
+                            message: state.message,
+                            context: context,
+                            isError: false,
+                          );
+                          context.read<ActiveBusinessCubit>().setActiveBusiness(
+                            state.data.id,
+                          );
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/business_created',
+                            arguments: state.data,
+                          );
+                        } else if (state is BusinessError) {
+                          CustomSnackBar.show(
+                            message: state.errorMessage,
+                            context: context,
+                            isError: true,
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

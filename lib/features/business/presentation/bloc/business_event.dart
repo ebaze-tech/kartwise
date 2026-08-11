@@ -24,7 +24,30 @@ class CreateBusinessEvent extends BusinessEvent {
   });
 }
 
-class GetBusinessCategoriesEvent extends BusinessEvent {}
+class UpdateBusinessEvent extends BusinessEvent {
+  final String id;
+  final String name;
+  final String description;
+  final String address;
+  final String emailAddress;
+  final String phoneNumber;
+  final File? bannerImage;
+  final bool isActive;
+  final String? categoryName;
+
+  UpdateBusinessEvent({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.address,
+    required this.emailAddress,
+    required this.phoneNumber,
+    required this.bannerImage,
+    required this.isActive,
+    this.categoryName,
+  });
+}
+
 
 class GetLocalBusinessEvent extends BusinessEvent {}
 
