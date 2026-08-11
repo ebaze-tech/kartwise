@@ -5,7 +5,6 @@ import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/dropdown.dart';
 import 'package:campus_cart/components/form.dart';
 import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_category_bloc.dart';
@@ -238,11 +237,11 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
 
                       BlocBuilder<BusinessCategoryBloc, BusinessCategoryState>(
                         builder: (context, categoryState) {
-                          if (categoryState is BusinessCategoryLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+                          // if (categoryState is BusinessCategoryLoading) {
+                          //   return const Center(
+                          //     child: CircularProgressIndicator(),
+                          //   );
+                          // }
 
                           if (categoryState is BusinessCategoryLoaded) {
                             final categories = categoryState.data ?? [];

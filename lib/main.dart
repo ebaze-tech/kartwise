@@ -1,3 +1,4 @@
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/core/network/dio.dart';
 import 'package:campus_cart/core/theme/theme.dart';
@@ -88,7 +89,9 @@ Future<void> main() async {
       authRepository: authRepository,
     ),
     updateProfileUsecase: UpdateProfileUseCase(authRepository: authRepository),
-    updatePasswordUsecase: UpdatePasswordUsecase(authRemoteDataSource: authRemoteDataSource)
+    updatePasswordUsecase: UpdatePasswordUsecase(
+      authRemoteDataSource: authRemoteDataSource,
+    ),
   );
 
   businessBloc = BusinessBloc(
@@ -150,9 +153,7 @@ class MyApp extends StatelessWidget {
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: ((context, state) {
             if (state is AuthLoading) {
-              return const Scaffold(
-                body: Center(child: GradientSpinner(size: 50)),
-              );
+              return const Scaffold(body: Center(child: AnimatedLoadingPage()));
             }
 
             if (state is AuthSuccess) {

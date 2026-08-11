@@ -5,7 +5,6 @@ import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/dropdown.dart';
 import 'package:campus_cart/components/form.dart';
 import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/components/toggle.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
@@ -102,6 +101,7 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
         backgroundColor: DefaultColors.primary,
         title: Text(
           'Create Your Business',
