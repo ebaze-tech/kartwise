@@ -5,7 +5,6 @@ import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
-import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
@@ -34,7 +33,7 @@ class _UserProfileState extends State<UserProfile> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/business_owner_dashboard');
+            Navigator.of(context).pushNamed('/business_owner_dashboard');
           },
           icon: Icon(Icons.arrow_back),
         ),
@@ -82,7 +81,6 @@ class _UserProfileState extends State<UserProfile> {
                 if (authState is UserProfileLoading ||
                     businessState is BusinessLoading) {
                   return AnimatedLoadingPage(message: 'Loading profile...');
-                  // return const Center(child: GradientSpinner(size: 50));
                 }
 
                 if (authState is UserProfileLoaded &&
@@ -90,14 +88,16 @@ class _UserProfileState extends State<UserProfile> {
                   return Center(
                     child: Profile(
                       userProfileEntity: authState.data,
-                      businessEntity: businessState.data,
+                      businessEntity: businessState.data.isNotEmpty
+                          ? businessState.data.first
+                          : null,
                     ),
                   );
                 }
 
                 if (authState is UserProfileError) {
                   return CustomError(
-                    message: 'Failed to load user profile.',
+                    message: authState.errorMessage,
                     onRetry: () =>
                         context.read<AuthBloc>().add(UserProfileEvent()),
                   );
@@ -105,7 +105,7 @@ class _UserProfileState extends State<UserProfile> {
 
                 if (businessState is BusinessError) {
                   return CustomError(
-                    message: 'Failed to load business profile.',
+                    message: businessState.errorMessage,
                     onRetry: () =>
                         context.read<BusinessBloc>().add(GetBusinessEvent()),
                   );

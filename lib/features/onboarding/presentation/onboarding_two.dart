@@ -64,7 +64,9 @@ class OnboardingTwo extends StatelessWidget {
                     buttonText: "Continue",
                     isIconButton: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, '/onboarding_screen_three');
+                      Navigator.of(
+                        context,
+                      ).pushNamed('/onboarding_screen_three');
                     },
                   ),
                 ],

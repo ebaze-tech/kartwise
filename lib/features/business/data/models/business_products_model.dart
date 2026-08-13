@@ -15,3 +15,31 @@ class BusinessProductsModel {
     );
   }
 }
+
+class BusinessProductByIdModel {
+  final String message;
+  final ProductEntity data;
+
+  BusinessProductByIdModel({required this.message, required this.data});
+
+  factory BusinessProductByIdModel.fromJson(Map<String, dynamic> json) {
+    return BusinessProductByIdModel(
+      message: json['message'] as String,
+      data: ProductEntity.fromJson(json['data'] as Map<String, dynamic>),
+    );
+  }
+}
+
+class CreateProductsModel {
+  final String message;
+  final ProductEntity data;
+
+  CreateProductsModel({required this.message, required this.data});
+
+  factory CreateProductsModel.fromJson(Map<String, dynamic> json) {
+    return CreateProductsModel(
+      message: json['message'] as String,
+      data: ProductEntity.fromJson(json['data'] as Map<String, dynamic>),
+    );
+  }
+}

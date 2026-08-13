@@ -26,7 +26,7 @@ abstract class AuthRepository {
     String currentPassword,
     String newPassword,
   );
-  Future<UserProfileModel> updateUserProfile(String university);
+  Future<UserProfileModel> updateUserProfile(String permanentAddress);
 
   Future<EmailUpdateModel> updateEmail(String currentEmail, String newEmail);
 

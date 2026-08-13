@@ -7,9 +7,6 @@ import 'package:campus_cart/components/form.dart';
 import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_category_bloc.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_category_event.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_category_state.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +53,7 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
   void initState() {
     super.initState();
     context.read<BusinessBloc>().add(GetBusinessEvent());
-    context.read<BusinessCategoryBloc>().add(GetBusinessCategoriesEvent());
+    // context.read<BusinessCategoryBloc>().add(GetBusinessCategoriesEvent());
   }
 
   Future<void> _pickBannerImage() async {
@@ -96,7 +93,7 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/user_profile');
+            Navigator.of(context).pushNamed('/user_profile');
           },
         ),
         iconTheme: const IconThemeData(color: DefaultColors.background),
@@ -128,14 +125,17 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
               );
             } else if (state is BusinessLoaded) {
               if (_businessId == null) {
-                _businessId = state.data.id;
-                _businessNameController.text = state.data.name;
-                _businessDescriptionController.text = state.data.description;
-                _businessEmailAddressController.text = state.data.emailAddress;
-                _businessPhoneNumberController.text = state.data.phoneNumber;
-                _businessAddressController.text = state.data.address;
-                _selectedCategory = state.data.categoryName;
-                _isActiveController = state.data.isActive;
+                _businessId = state.data.first.id;
+                _businessNameController.text = state.data.first.name;
+                _businessDescriptionController.text =
+                    state.data.first.description;
+                _businessEmailAddressController.text =
+                    state.data.first.emailAddress;
+                _businessPhoneNumberController.text =
+                    state.data.first.phoneNumber;
+                _businessAddressController.text = state.data.first.address;
+                _selectedCategory = state.data.first.categoryName;
+                _isActiveController = state.data.first.isActive;
               }
             } else if (state is BusinessUpdateLoaded) {
               CustomSnackBar.show(
@@ -235,7 +235,7 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
                         readOnly: false,
                       ),
 
-                      BlocBuilder<BusinessCategoryBloc, BusinessCategoryState>(
+                      BlocBuilder<BusinessBloc, BusinessState>(
                         builder: (context, categoryState) {
                           // if (categoryState is BusinessCategoryLoading) {
                           //   return const Center(
@@ -243,7 +243,7 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
                           //   );
                           // }
 
-                          if (categoryState is BusinessCategoryLoaded) {
+                          if (categoryState is BusinessCategoriesLoaded) {
                             final categories = categoryState.data ?? [];
 
                             final isValidCategory =
@@ -281,7 +281,7 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
                             );
                           }
 
-                          if (categoryState is BusinessCategoryError) {
+                          if (categoryState is BusinessCategoriesError) {
                             return Text(
                               'Error loading categories: ${categoryState.errorMessage}',
                               style: const TextStyle(color: Colors.red),
@@ -291,7 +291,7 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
                           }
                         },
                       ),
-
+                      SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,

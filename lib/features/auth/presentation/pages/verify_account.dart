@@ -1,6 +1,5 @@
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/components/spinner.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
@@ -20,6 +19,8 @@ class _VerifyAccountState extends State<VerifyAccount> {
   final TextEditingController _otpController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  bool _isVerifying = false;
+
   @override
   void dispose() {
     _otpController.dispose();
@@ -36,7 +37,10 @@ class _VerifyAccountState extends State<VerifyAccount> {
         isError: true,
       );
     } else {
-      print('Entered OTP: $pin');
+      setState(() {
+        _isVerifying = true;
+      });
+
       BlocProvider.of<AuthBloc>(
         context,
       ).add(OtpEvent(otp: _otpController.text.trim()));
@@ -46,6 +50,10 @@ class _VerifyAccountState extends State<VerifyAccount> {
   void _onResendOtp() {
     _otpController.clear();
     _focusNode.requestFocus();
+
+    setState(() {
+      _isVerifying = false;
+    });
 
     BlocProvider.of<AuthBloc>(context).add(ResendOtpEvent());
   }
@@ -84,7 +92,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 BlendMode.srcIn,
               ),
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Text(
               'PeerPlaza',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -108,12 +116,12 @@ class _VerifyAccountState extends State<VerifyAccount> {
                   size: 100,
                   color: Theme.of(context).primaryColor,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   'Check Your Email',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),
                   child: Text(
@@ -123,7 +131,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
                     softWrap: true,
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Pinput(
                   length: 6,
                   controller: _otpController,
@@ -134,46 +142,9 @@ class _VerifyAccountState extends State<VerifyAccount> {
                     _onVerifyEmail();
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
                 BlocConsumer<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    if (state is AuthLoading) {
-                      return GradientSpinner(size: 50);
-                    }
-                    return Column(
-                      children: [
-                        Button(
-                          buttonText: "Verify Email",
-                          isIconButton: false,
-                          onPressed: _onVerifyEmail,
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Didn't receive the code? ",
-                              style: Theme.of(context).textTheme.bodySmall,
-                              // textAlign: TextAlign.center,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                _onResendOtp();
-                              },
-                              child: Text(
-                                "Resend Code",
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
                   listener: (context, state) {
                     if (state is AuthSuccess) {
                       CustomSnackBar.show(
@@ -181,17 +152,64 @@ class _VerifyAccountState extends State<VerifyAccount> {
                         context: context,
                         isError: false,
                       );
-                      Navigator.pushReplacementNamed(
-                        context,
-                        '/signin_account',
-                      );
+
+                      if (_isVerifying) {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          '/signin_account',
+                        );
+                      }
                     } else if (state is AuthFailure) {
                       CustomSnackBar.show(
                         message: state.errorMessage,
                         context: context,
                         isError: true,
                       );
+
+                      setState(() {
+                        _isVerifying = false;
+                      });
                     }
+                  },
+                  builder: (context, state) {
+                    final isLoading = state is AuthLoading;
+
+                    return Column(
+                      children: [
+                        Button(
+                          buttonText: isLoading
+                              ? (_isVerifying ? "Verifying..." : "Sending...")
+                              : "Verify Email",
+                          isIconButton: false,
+                          onPressed: isLoading ? () {} : _onVerifyEmail,
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Didn't receive the code?",
+                              style: Theme.of(context).textTheme.bodySmall,
+                              textAlign: TextAlign.center,
+                            ),
+                            GestureDetector(
+                              onTap: isLoading ? null : _onResendOtp,
+                              child: Text(
+                                " Resend Code",
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: isLoading
+                                          ? Colors.grey
+                                          : Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
                   },
                 ),
               ],

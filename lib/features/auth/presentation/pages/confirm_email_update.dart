@@ -122,7 +122,7 @@ class _ConfirmEmailUpdateState extends State<ConfirmEmailUpdate> {
                       context: context,
                       isError: false,
                     );
-                    Navigator.pushNamed(context, '/user_profile');
+                    Navigator.of(context).pushNamed( '/user_profile');
                   } else if (state is ConfirmEmailUpdateError) {
                     CustomSnackBar.show(
                       message: state.errorMessage,

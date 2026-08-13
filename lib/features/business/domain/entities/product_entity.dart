@@ -1,3 +1,5 @@
+import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
+
 class ProductEntity {
   final String id;
   final String name;
@@ -8,7 +10,9 @@ class ProductEntity {
   final String businessId;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String productCategoryName;
   final List<ProductImages>? images;
+  final List<BusinessEntity>? business;
 
   ProductEntity({
     required this.id,
@@ -20,7 +24,9 @@ class ProductEntity {
     required this.businessId,
     required this.createdAt,
     required this.updatedAt,
+    required this.productCategoryName,
     this.images,
+    this.business,
   });
 
   factory ProductEntity.fromJson(Map<String, dynamic> json) {
@@ -32,6 +38,7 @@ class ProductEntity {
       isAvailable: json['isAvailable'] as bool,
       stockCount: json['stockCount'] as int,
       businessId: json['businessId'] as String,
+      productCategoryName: json['productCategoryName'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       images: json['images'] != null
