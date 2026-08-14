@@ -40,7 +40,7 @@ class CustomFormField extends StatelessWidget {
             borderSide: BorderSide(color: DefaultColors.primary, width: 2.0),
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
-          labelStyle: Theme.of(context).textTheme.bodySmall,
+          labelStyle: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
     );

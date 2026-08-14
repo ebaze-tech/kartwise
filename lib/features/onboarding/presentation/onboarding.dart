@@ -16,8 +16,7 @@ class Onboarding extends StatelessWidget {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
+                  Navigator.of(context).pushNamedAndRemoveUntil(
                     '/create_account',
                     (route) => false,
                   );
@@ -68,7 +67,7 @@ class Onboarding extends StatelessWidget {
                     buttonText: "Continue",
                     isIconButton: false,
                     onPressed: () {
-                      Navigator.pushNamed(context, '/onboarding_screen_two');
+                      Navigator.of(context).pushNamed('/onboarding_screen_two');
                     },
                   ),
                 ],

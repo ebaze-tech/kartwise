@@ -24,7 +24,7 @@ class _AnimatedLoadingPageState extends State<AnimatedLoadingPage>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 4),
     )..repeat(reverse: true);
 
     _scaleAnimation = Tween<double>(

@@ -8,27 +8,30 @@ import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class UpdateUniversity extends StatefulWidget {
-  const UpdateUniversity({super.key});
+class UpdateProfile extends StatefulWidget {
+  const UpdateProfile({super.key});
 
   @override
-  State<UpdateUniversity> createState() => _UpdateUniversityState();
+  State<UpdateProfile> createState() => _UpdateProfileState();
 }
 
-class _UpdateUniversityState extends State<UpdateUniversity> {
+class _UpdateProfileState extends State<UpdateProfile> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _universityController = TextEditingController();
+  final TextEditingController _permanentAddressController =
+      TextEditingController();
 
   @override
   void dispose() {
-    _universityController.dispose();
+    _permanentAddressController.dispose();
     super.dispose();
   }
 
-  void _updateUniversity() {
+  void _updatePermanentAddress() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
-        UpdateUniversityEvent(university: _universityController.text.trim()),
+        UpdatePermanentAddressEvent(
+          permanentAddress: _permanentAddressController.text.trim(),
+        ),
       );
     }
   }
@@ -40,7 +43,7 @@ class _UpdateUniversityState extends State<UpdateUniversity> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/user_profile');
+            Navigator.of(context).pushNamed('/user_profile');
           },
         ),
         iconTheme: const IconThemeData(color: DefaultColors.background),
@@ -65,11 +68,11 @@ class _UpdateUniversityState extends State<UpdateUniversity> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CustomFormField(
-                  controller: _universityController,
-                  labelText: "Enter University Name",
+                  controller: _permanentAddressController,
+                  labelText: "Enter Permanent Address",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Enter your university's name";
+                      return "Enter your permanent address";
                     }
                     return null;
                   },
@@ -81,14 +84,14 @@ class _UpdateUniversityState extends State<UpdateUniversity> {
                 const SizedBox(height: 32),
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
-                    if (state is UpdateUniversitySuccess) {
+                    if (state is UpdatePermanentAddressSuccess) {
                       CustomSnackBar.show(
                         message: state.message,
                         context: context,
                         isError: false,
                       );
-                      Navigator.pushNamed(context, '/user_profile');
-                    } else if (state is UpdateUniversityError) {
+                      Navigator.of(context).pushNamed('/user_profile');
+                    } else if (state is UpdatePermanentAddressError) {
                       CustomSnackBar.show(
                         message: state.errorMessage,
                         context: context,
@@ -97,11 +100,11 @@ class _UpdateUniversityState extends State<UpdateUniversity> {
                     }
                   },
                   builder: (context, state) {
-                    final isLoading = state is UpdateUniversityLoading;
+                    final isLoading = state is UpdatePermanentAddressLoading;
                     return Button(
                       buttonText: isLoading ? "Updating..." : "Done",
                       isIconButton: false,
-                      onPressed: isLoading ? () {} : _updateUniversity,
+                      onPressed: isLoading ? () {} : _updatePermanentAddress,
                     );
                   },
                 ),

@@ -134,6 +134,18 @@ class BusinessRemoteDataSource {
     }
   }
 
+  Future<BusinessCategoriesModel> getBusinessProductCategories() async {
+    try {
+      final response = await apiClient.dio.get('/business/products/categories');
+
+      print(response.data);
+      return BusinessCategoriesModel.fromJson(response.data);
+    } on DioException catch (e) {
+      print(e.toString());
+      throw _handleDioError(e);
+    }
+  }
+
   Future<BusinessProductsModel> getBusinessProducts() async {
     try {
       final response = await apiClient.dio.get('/business/products');
@@ -141,6 +153,73 @@ class BusinessRemoteDataSource {
       return BusinessProductsModel.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to fetch business products.');
+    }
+  }
+
+  Future<BusinessProductByIdModel> getBusinessProductById(String productId) async {
+    try {
+      final response = await apiClient.dio.get('/business/products/$productId');
+      print(response.data);
+      return BusinessProductByIdModel.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to fetch business product.');
+    }
+  }
+
+  Future<CreateProductsModel> createProduct({
+    required String name,
+    required String description,
+    required double price,
+    required bool isAvailable,
+    required int stockCount,
+    required List<File> images,
+    required String businessName,
+    required String productCategoryName,
+  }) async {
+    print(
+      'Creating product with name: $name, description: $description, price: $price, isAvailable: $isAvailable, stockCount: $stockCount, businessName: $businessName, productCategoryName: $productCategoryName, images count: ${images.length}, image mime types: ${images.map((image) => image.path.split('.').last).toList()}',
+    );
+    try {
+      Map<String, dynamic> formDataMap = {
+        'name': name,
+        'description': description,
+        'price': price,
+        'isAvailable': isAvailable,
+        'stockCount': stockCount,
+        'businessName': businessName,
+        'productCategoryName': productCategoryName,
+        'images': images
+            .map(
+              (image) => MultipartFile.fromFileSync(
+                image.path,
+                filename: image.path.split('/').last,
+              ),
+            )
+            .toList(),
+      };
+
+      if (images.isNotEmpty) {
+        formDataMap['images'] = await Future.wait(
+          images.map((image) async {
+            return await MultipartFile.fromFile(
+              image.path,
+              filename: image.path.split('/').last,
+            );
+          }),
+        );
+      }
+
+      FormData formData = FormData.fromMap(formDataMap);
+      final response = await apiClient.dio.post(
+        '/business/product',
+        data: formData,
+      );
+
+      print(response.data);
+      return CreateProductsModel.fromJson(response.data);
+    } on DioException catch (e) {
+      print(e.toString());
+      throw _handleDioError(e);
     }
   }
 

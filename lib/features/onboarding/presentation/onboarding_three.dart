@@ -65,8 +65,7 @@ class OnboardingThree extends StatelessWidget {
                     isIconButton: false,
                     onPressed: () {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
+                      Navigator.of(context).pushNamedAndRemoveUntil(
                         "/signup_account",
                         (route) => false,
                       );

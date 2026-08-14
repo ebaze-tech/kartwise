@@ -26,7 +26,8 @@ class Profile extends StatelessWidget {
         ? 'Student Entrepreneur'
         : 'Student';
 
-    final String university = userProfileEntity['university'] ?? 'N/A';
+    final String permanentAddress =
+        userProfileEntity['permanentAddress'] ?? 'N/A';
 
     final String storeName = businessEntity?.name.isNotEmpty == true
         ? businessEntity!.name
@@ -63,11 +64,9 @@ class Profile extends StatelessWidget {
                 label: 'Email Address',
                 value: email,
                 onTap: () {
-                  Navigator.pushNamed(
+                  Navigator.of(
                     context,
-                    '/update_email',
-                    arguments: email,
-                  );
+                  ).pushNamed('/update_email', arguments: email);
                 },
                 trailingIcon: Icons.chevron_right,
               ),
@@ -75,10 +74,10 @@ class Profile extends StatelessWidget {
               _buildListItem(
                 context: context,
                 icon: Icons.school_outlined,
-                label: 'University',
-                value: university,
+                label: 'Permanent Address',
+                value: permanentAddress,
                 onTap: () {
-                  Navigator.pushNamed(context, '/update_university');
+                  Navigator.of(context).pushNamed('/update_profile');
                 },
                 trailingIcon: Icons.chevron_right,
               ),
@@ -97,7 +96,7 @@ class Profile extends StatelessWidget {
                 label: 'Store Name',
                 value: storeName,
                 onTap: () {
-                  Navigator.pushNamed(context, '/update_business');
+                  Navigator.of(context).pushNamed('/update_business');
                 },
                 trailingIcon: Icons.chevron_right,
               ),
@@ -108,7 +107,7 @@ class Profile extends StatelessWidget {
                 label: 'Payment Methods',
                 value: 'Cash, Transfer, Card',
                 onTap: () {
-                  Navigator.pushNamed(context, '/update_payment_methods');
+                  Navigator.of(context).pushNamed('/update_payment_methods');
                 },
                 trailingIcon: Icons.chevron_right,
               ),
@@ -125,7 +124,7 @@ class Profile extends StatelessWidget {
                 icon: Icons.lock_outline,
                 label: 'Change Password',
                 onTap: () {
-                  Navigator.pushNamed(context, '/update_password');
+                  Navigator.of(context).pushNamed('/update_password');
                 },
               ),
             ],

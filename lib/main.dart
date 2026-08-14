@@ -1,4 +1,4 @@
-import 'package:campus_cart/components/spinner.dart';
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/core/network/dio.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/data/datasource/auth_remote_data_source.dart';
@@ -19,21 +19,21 @@ import 'package:campus_cart/features/auth/presentation/pages/confirm_email_updat
 import 'package:campus_cart/features/auth/presentation/pages/create_account.dart';
 import 'package:campus_cart/features/auth/presentation/pages/update_email.dart';
 import 'package:campus_cart/features/auth/presentation/pages/update_password.dart';
-import 'package:campus_cart/features/auth/presentation/pages/update_university.dart';
+import 'package:campus_cart/features/auth/presentation/pages/update_profile.dart';
 import 'package:campus_cart/features/auth/presentation/pages/user_profile.dart';
 import 'package:campus_cart/features/business/data/datasource/business_remote_data_source.dart';
-import 'package:campus_cart/features/business/domain/repositories/business_category_impl.dart';
 import 'package:campus_cart/features/business/domain/repositories/business_repository_impl.dart';
-import 'package:campus_cart/features/business/domain/usecases/business_categories_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_update_usecase.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_usecase.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_category_bloc.dart';
 import 'package:campus_cart/features/business/presentation/cubit/activate_business.dart';
+import 'package:campus_cart/features/business/presentation/pages/add_product.dart';
 import 'package:campus_cart/features/business/presentation/pages/business_created.dart';
 import 'package:campus_cart/features/business/presentation/pages/business_dashboard.dart';
+import 'package:campus_cart/features/business/presentation/pages/product_details.dart';
+import 'package:campus_cart/features/business/presentation/pages/products_screen.dart';
 import 'package:campus_cart/features/business/presentation/pages/register_business.dart';
 import 'package:campus_cart/features/auth/presentation/pages/dashboard/buyer.dart';
 import 'package:campus_cart/features/auth/presentation/pages/login_account.dart';
@@ -53,7 +53,6 @@ Future<void> main() async {
 
   late AuthBloc authBloc;
   late BusinessBloc businessBloc;
-  late BusinessCategoryBloc businessCategoryBloc;
 
   final apiClient = ApiClient(
     onUnauthenticated: () {
@@ -71,9 +70,6 @@ Future<void> main() async {
   final businessRepository = BusinessRepositoryImpl(
     businessRemoteDataSource: businessRemoteDataSource,
   );
-  final businessCategoryRepository = BusinessCategoryImpl(
-    businessRemoteDataSource: businessRemoteDataSource,
-  );
 
   authBloc = AuthBloc(
     registerUsecase: RegisterUsecase(authRepository: authRepository),
@@ -88,7 +84,9 @@ Future<void> main() async {
       authRepository: authRepository,
     ),
     updateProfileUsecase: UpdateProfileUseCase(authRepository: authRepository),
-    updatePasswordUsecase: UpdatePasswordUsecase(authRemoteDataSource: authRemoteDataSource)
+    updatePasswordUsecase: UpdatePasswordUsecase(
+      authRemoteDataSource: authRemoteDataSource,
+    ),
   );
 
   businessBloc = BusinessBloc(
@@ -105,40 +103,22 @@ Future<void> main() async {
     getBusinessUseCase: BusinessUseCase(repository: businessRepository),
   );
 
-  businessCategoryBloc = BusinessCategoryBloc(
-    getBusinessCategoriesUseCase: BusinessCategoriesUseCase(
-      repository: businessCategoryRepository,
-    ),
-  );
-
-  runApp(
-    MyApp(
-      authBloc: authBloc,
-      businessBloc: businessBloc,
-      businessCategoryBloc: businessCategoryBloc,
-    ),
-  );
+  runApp(MyApp(authBloc: authBloc, businessBloc: businessBloc));
 }
 
 class MyApp extends StatelessWidget {
   final AuthBloc authBloc;
   final BusinessBloc businessBloc;
-  final BusinessCategoryBloc businessCategoryBloc;
 
-  const MyApp({
-    super.key,
-    required this.authBloc,
-    required this.businessBloc,
-    required this.businessCategoryBloc,
-  });
+  const MyApp({super.key, required this.authBloc, required this.businessBloc});
 
   @override
   Widget build(BuildContext context) {
+    authBloc.add(CheckAuthStatusEvent());
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: authBloc..add(CheckAuthStatusEvent())),
+        BlocProvider.value(value: authBloc),
         BlocProvider.value(value: businessBloc),
-        BlocProvider.value(value: businessCategoryBloc),
         BlocProvider<ActiveBusinessCubit>(
           create: (context) => ActiveBusinessCubit(),
         ),
@@ -150,9 +130,7 @@ class MyApp extends StatelessWidget {
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: ((context, state) {
             if (state is AuthLoading) {
-              return const Scaffold(
-                body: Center(child: GradientSpinner(size: 50)),
-              );
+              return AnimatedLoadingPage();
             }
 
             if (state is AuthSuccess) {
@@ -161,6 +139,10 @@ class MyApp extends StatelessWidget {
               } else if (state.role == 'BUYER') {
                 return const Buyer();
               }
+            }
+
+            if (state is AuthFailure) {
+              return LoginAccount();
             }
             return const Onboarding();
           }),
@@ -181,9 +163,12 @@ class MyApp extends StatelessWidget {
           '/user_profile': (context) => const UserProfile(),
           '/update_email': (context) => const UpdateEmail(),
           '/update_password': (context) => const UpdatePassword(),
-          '/update_university': (context) => const UpdateUniversity(),
+          '/update_profile': (context) => const UpdateProfile(),
           '/update_business': (context) => const UpdateBusiness(),
           '/confirm_email_update': (context) => const ConfirmEmailUpdate(),
+          '/business_products': (context) => ProductsScreen(),
+          '/add_product': (context) => const AddProduct(),
+          '/product_details': (context) => const ProductDetails(),
         },
       ),
     );

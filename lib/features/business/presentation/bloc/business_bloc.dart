@@ -24,7 +24,11 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     on<UpdateBusinessEvent>(_onUpdateBusiness);
     on<GetLocalBusinessEvent>(_onGetLocalBusiness);
     on<GetBusinessProductsEvent>(_onGetBusinessProducts);
+    on<GetBusinessProductByIdEvent>(_onGetBusinessProductById);
     on<GetBusinessEvent>(_onGetBusiness);
+    on<CreateProductEvent>(_onCreateProduct);
+    on<GetBusinessCategoriesEvent>(_onGetBusinessCategories);
+    on<GetBusinessProductCategoriesEvent>(_onGetBusinessProductCategories);
   }
 
   Future<void> _onCreateBusiness(
@@ -53,7 +57,7 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         key: 'businessPhone',
         value: response.data.phoneNumber,
       );
-      emit(BusinessLoaded(message: response.message, data: response.data));
+      emit(BusinessLoaded(message: response.message, data: [response.data]));
     } catch (e) {
       emit(BusinessError(errorMessage: _getCleanErrorMessage(e)));
     }
@@ -88,7 +92,7 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         value: response.data.phoneNumber,
       );
       emit(
-        BusinessUpdateLoaded(message: response.message, data: response.data),
+        BusinessUpdateLoaded(message: response.message, data: [response.data]),
       );
     } catch (e) {
       emit(BusinessUpdateError(errorMessage: _getCleanErrorMessage(e)));
@@ -112,7 +116,7 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         key: 'businessPhone',
         value: response.data.phoneNumber,
       );
-      emit(BusinessLoaded(message: response.message, data: response.data));
+      emit(BusinessLoaded(message: response.message, data: [response.data]));
     } catch (e) {
       emit(BusinessError(errorMessage: _getCleanErrorMessage(e)));
     }
@@ -163,6 +167,88 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
       );
     } catch (e) {
       emit(BusinessProductsError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onGetBusinessProductById(
+    GetBusinessProductByIdEvent event,
+    Emitter<BusinessState> emit,
+  ) async {
+    emit(BusinessProductByIdLoading());
+    try {
+      final response = await _getBusinessProductsUseCase.getBusinessProductById(
+        event.productId,
+      );
+      emit(
+        BusinessProductByIdLoaded(message: response.message, data: response.data),
+      );
+    } catch (e) {
+      emit(BusinessProductByIdError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onCreateProduct(
+    CreateProductEvent event,
+    Emitter<BusinessState> emit,
+  ) async {
+    emit(CreateProductLoading());
+    try {
+      final businessName = await _storage.read(key: 'businessName');
+      if (businessName == null) {
+        emit(CreateProductError(errorMessage: 'Business name not found.'));
+        return;
+      }
+      final response = await _getBusinessProductsUseCase.createProduct(
+        name: event.name,
+        description: event.description,
+        price: event.price,
+        stockCount: event.stockCount,
+        businessName: businessName,
+        productCategoryName: event.productCategoryName,
+        isAvailable: event.isAvailable,
+        images: event.images,
+      );
+      emit(CreateProductLoaded(message: response.message, data: response.data));
+    } catch (e) {
+      emit(CreateProductError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onGetBusinessCategories(
+    GetBusinessCategoriesEvent event,
+    Emitter<BusinessState> emit,
+  ) async {
+    emit(BusinessCategoriesLoading());
+    try {
+      final response = await _getBusinessProductsUseCase
+          .getBusinessCategories();
+      emit(
+        BusinessCategoriesLoaded(
+          message: response.message,
+          data: response.data,
+        ),
+      );
+    } catch (e) {
+      emit(BusinessCategoriesError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onGetBusinessProductCategories(
+    GetBusinessProductCategoriesEvent event,
+    Emitter<BusinessState> emit,
+  ) async {
+    emit(BusinessCategoriesLoading());
+    try {
+      final response = await _getBusinessProductsUseCase
+          .getBusinessProductCategories();
+      emit(
+        BusinessCategoriesLoaded(
+          message: response.message,
+          data: response.data,
+        ),
+      );
+    } catch (e) {
+      emit(BusinessCategoriesError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 

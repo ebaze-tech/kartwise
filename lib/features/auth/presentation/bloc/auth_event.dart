@@ -38,9 +38,9 @@ class ResendOtpEvent extends AuthEvent {
 class UserProfileEvent extends AuthEvent {}
 
 class UpdateUserProfileEvent extends AuthEvent {
-  final String university;
+  final String permanentAddress;
 
-  UpdateUserProfileEvent({required this.university});
+  UpdateUserProfileEvent({required this.permanentAddress});
 }
 
 class CheckAuthStatusEvent extends AuthEvent {}
@@ -58,10 +58,10 @@ class ConfirmEmailUpdateEvent extends AuthEvent {
   ConfirmEmailUpdateEvent({required this.otp});
 }
 
-class UpdateUniversityEvent extends AuthEvent {
-  final String university;
+class UpdatePermanentAddressEvent extends AuthEvent {
+  final String permanentAddress;
 
-  UpdateUniversityEvent({required this.university});
+  UpdatePermanentAddressEvent({required this.permanentAddress});
 }
 
 class UpdatePasswordEvent extends AuthEvent {

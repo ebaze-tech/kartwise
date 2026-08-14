@@ -6,7 +6,7 @@ class UpdateProfileUseCase {
 
   UpdateProfileUseCase({required this.authRepository});
 
-  Future<UserProfileModel> call(String university) async {
-    return await authRepository.updateUserProfile(university);
+  Future<UserProfileModel> call(String permanentAddress) async {
+    return await authRepository.updateUserProfile(permanentAddress);
   }
 }

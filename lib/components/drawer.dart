@@ -55,16 +55,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   const SizedBox(height: 12),
                   Text(
                     businessName,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: DefaultColors.background,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   Text(
                     businessOwner,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: DefaultColors.background.withValues(alpha: 0.8),
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -81,7 +83,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   title: 'Dashboard',
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushReplacementNamed(context, '/business_dashboard');
+                    Navigator.pushReplacementNamed(
+                      context,
+                      '/business_dashboard',
+                    );
                   },
                 ),
                 _buildDrawerItem(
@@ -90,7 +95,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   title: 'Products',
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushNamed(context, '/my_products');
+                    Navigator.of(context).pushNamed('/business_products');
+                    // Navigator.of(context).pushNamed(context, '/my_products');
                   },
                 ),
                 _buildDrawerItem(
@@ -99,7 +105,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   title: 'Orders',
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushNamed(context, '/orders');
+                    // Navigator.of(context).pushNamed(context, '/orders');
                   },
                 ),
                 _buildDrawerItem(
@@ -108,7 +114,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   title: 'Analytics',
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushNamed(context, '/orders');
+                    // Navigator.of(context).pushNamed(context, '/orders');
                   },
                 ),
                 _buildDrawerItem(
@@ -117,11 +123,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   title: 'Profile',
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(
+                    Navigator.of(
                       context,
-                      '/user_profile',
-                      arguments: argument,
-                    );
+                    ).pushNamed('/user_profile', arguments: argument);
                   },
                 ),
                 const Divider(height: 30, thickness: 1),
@@ -143,9 +147,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
             onPressed: () {
               context.read<AuthBloc>().add(LogoutEvent());
               Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/signin_account');
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/signin_account',
+                (route) => false,
+              );
             },
-            buttonColor: DefaultColors.danger,
+            buttonColor: DefaultColors.error,
           ),
           SizedBox(height: 45),
         ],

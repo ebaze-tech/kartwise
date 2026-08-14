@@ -43,6 +43,7 @@ dependencies:
   pinput: ^6.0.2
   dio: ^5.11.0
   image_picker: ^1.2.3
+  material_symbols_icons: ^4.2960.0
 
 dev_dependencies:
   flutter_test:

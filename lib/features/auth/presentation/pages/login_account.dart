@@ -146,14 +146,12 @@ class _LoginAccountState extends State<LoginAccount> {
                         isError: false,
                       );
                       if (state.role == "BUYER") {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
+                        Navigator.of(context).pushNamedAndRemoveUntil(
                           '/buyer_dashboard',
                           (route) => false,
                         );
                       } else if (state.role == "BUSINESS_OWNER") {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
+                        Navigator.of(context).pushNamedAndRemoveUntil(
                           '/business_owner_dashboard',
                           (route) => false,
                         );
@@ -177,8 +175,7 @@ class _LoginAccountState extends State<LoginAccount> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
+                        Navigator.of(context).pushNamedAndRemoveUntil(
                           '/signup_account',
                           (route) => false,
                         );

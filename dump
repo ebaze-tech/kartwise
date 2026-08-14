@@ -1,60 +1,238 @@
-                    BlocBuilder<BusinessCategoryBloc, BusinessCategoryState>(
-                        builder: (context, categoryState) {
-                          if (categoryState is BusinessCategoryLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+import 'package:campus_cart/components/animated_loader.dart';
+import 'package:campus_cart/components/button.dart';
+import 'package:campus_cart/components/snackbar.dart';
+import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/features/business/domain/entities/product_entity.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-                          if (categoryState is BusinessCategoryLoaded) {
-                            final categories = categoryState.data ?? [];
+class ProductDetails extends StatefulWidget {
+  const ProductDetails({super.key});
 
-                            // Ensure the _selectedCategory matches one of the fetched categories
-                            final isValidCategory =
-                                _selectedCategory != null &&
-                                categories.any(
-                                  (cat) => cat.name == _selectedCategory,
-                                );
+  @override
+  State<ProductDetails> createState() => _ProductDetailsState();
+}
 
-                            return DropdownButtonFormField<String>(
-                              value: isValidCategory ? _selectedCategory : null,
-                              decoration: InputDecoration(
-                                labelText: 'Business Category',
-                                labelStyle: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium,
-                                prefixIcon: const Icon(
-                                  Icons.category,
-                                  color: DefaultColors.primary,
-                                ),
+class _ProductDetailsState extends State<ProductDetails> {
+  bool _isInit = true;
+  ProductEntity? _initialProduct;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // Safely extract arguments and trigger the BLoC exactly once
+    if (_isInit) {
+      final productArg = ModalRoute.of(context)?.settings.arguments;
+      if (productArg is ProductEntity) {
+        _initialProduct = productArg;
+        
+        // Fire the fetch event to get the absolute latest data from the server
+        context.read<BusinessBloc>().add(
+              GetBusinessProductByIdEvent(productId: _initialProduct!.id),
+            );
+      }
+      _isInit = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // If somehow the product is null (navigated without args), show an error.
+    if (_initialProduct == null) {
+      return Scaffold(
+        appBar: AppBar(backgroundColor: DefaultColors.primary),
+        body: const Center(child: Text("Product not found.")),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: DefaultColors.background,
+      body: BlocConsumer<BusinessBloc, BusinessState>(
+        listener: (context, state) {
+          if (state is BusinessProductsError) { // Adjust error state name if needed
+            CustomSnackBar.show(
+              context: context,
+              message: state.errorMessage,
+              isError: true,
+            );
+          }
+        },
+        builder: (context, state) {
+          // We start by assuming the data is what was passed in the arguments.
+          ProductEntity displayProduct = _initialProduct!;
+
+          // If your BLoC successfully loaded fresh data for THIS product, override it.
+          // Note: Change 'BusinessProductLoaded' to whatever your single-product success state is called.
+          if (state is BusinessProductLoaded) {
+             displayProduct = state.data;
+          }
+
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            children: [
+              // --- 1. HERO IMAGE HEADER ---
+              SliverAppBar(
+                expandedHeight: 300,
+                pinned: true,
+                backgroundColor: DefaultColors.primary,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // Product Image
+                      displayProduct.images != null && displayProduct.images!.isNotEmpty
+                          ? Image.network(
+                              displayProduct.images!.first.url, // Showing first image
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.image_not_supported, size: 80, color: Colors.grey),
+                            ),
+                      
+                      // Dark gradient overlay so the back button is always visible
+                      const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.black54, Colors.transparent],
+                            stops: [0.0, 0.3],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // --- 2. PRODUCT DETAILS ---
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Status & Category Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: displayProduct.isAvailable ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              displayProduct.isAvailable ? 'Available' : 'Unavailable',
+                              style: TextStyle(
+                                color: displayProduct.isAvailable ? Colors.green[800] : Colors.red[800],
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
                               ),
-                              items: categories.map((category) {
-                                return DropdownMenuItem<String>(
-                                  value: category.name,
-                                  child: Text(category.name),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedCategory = value;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please select a business category';
-                                }
-                                return null;
-                              },
-                            );
-                          }
+                            ),
+                          ),
+                          Text(
+                            displayProduct.productCategoryName ?? 'Uncategorized',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
 
-                          if (categoryState is BusinessCategoryError) {
-                            return Text(
-                              'Failed to load categories',
-                              style: TextStyle(color: DefaultColors.danger),
-                            );
-                          }
+                      // Title & Price
+                      Text(
+                        displayProduct.name,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "₦${displayProduct.price}",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: DefaultColors.primary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                      const SizedBox(height: 24),
+                      const Divider(),
+                      const SizedBox(height: 16),
 
-                          return const SizedBox.shrink();
+                      // Inventory Stats
+                      Row(
+                        children: [
+                          const Icon(Icons.inventory_2_outlined, color: Colors.grey),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Stock Remaining:",
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[700]),
+                          ),
+                          const Spacer(),
+                          Text(
+                            "${displayProduct.stockCount} units",
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 16),
+
+                      // Description
+                      Text(
+                        "Description",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        displayProduct.description,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey[700],
+                              height: 1.5,
+                            ),
+                      ),
+                      const SizedBox(height: 40),
+
+                      // --- 3. ACTIONS ---
+                      Button(
+                        buttonText: "Edit Product",
+                        isIconButton: false,
+                        onPressed: () {
+                          // TODO: Navigate to EditProduct screen
                         },
                       ),
+                      const SizedBox(height: 16),
+                      Button(
+                        buttonText: "Delete Product",
+                        isIconButton: false,
+                        color: Colors.red[50], // If your Button component supports color overriding
+                        textColor: Colors.red,
+                        onPressed: () {
+                          // TODO: Show confirmation dialog, then dispatch DeleteProductEvent
+                        },
+                      ),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}

@@ -8,7 +8,7 @@ class CustomSnackBar {
     required bool isError,
   }) {
     final backgroundColor = isError
-        ? DefaultColors.danger
+        ? DefaultColors.error
         : DefaultColors.success;
 
     ScaffoldMessenger.of(context).showSnackBar(

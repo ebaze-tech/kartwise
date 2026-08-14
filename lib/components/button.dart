@@ -18,7 +18,7 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: SizedBox(
         height: 50,
         width: double.infinity,
@@ -36,7 +36,7 @@ class Button extends StatelessWidget {
             children: [
               Text(
                 buttonText,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: DefaultColors.whiteText,
                   fontWeight: FontWeight.bold,
                 ),

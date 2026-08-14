@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 import 'package:campus_cart/features/business/data/models/business_model.dart';
 import 'package:campus_cart/features/business/data/models/business_products_model.dart';
 
@@ -28,5 +29,22 @@ abstract class BusinessRepository {
 
   Future<BusinessProductsModel> getBusinessProducts();
 
+  Future<BusinessProductByIdModel> getBusinessProductById(String productId);
+
+  Future<BusinessCategoriesModel> getBusinessCategories();
+
+  Future<BusinessCategoriesModel> getBusinessProductCategories();
+
   Future<BusinessModel> getBusiness();
+
+  Future<CreateProductsModel> createProduct({
+    required String name,
+    required String description,
+    required double price,
+    required int stockCount,
+    required bool isAvailable,
+    required List<File> images,
+    required String businessName,
+    required String productCategoryName,
+  });
 }

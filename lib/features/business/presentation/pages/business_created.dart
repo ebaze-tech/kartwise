@@ -56,10 +56,7 @@ class _BusinessCreatedState extends State<BusinessCreated> {
                 buttonText: "Proceed to Dashboard",
                 isIconButton: false,
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/business_dashboard',
-                  );
+                  Navigator.of(context).pushNamed('/business_dashboard');
                 },
               ),
             ],

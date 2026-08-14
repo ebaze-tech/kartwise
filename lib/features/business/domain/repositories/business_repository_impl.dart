@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:campus_cart/features/business/data/datasource/business_remote_data_source.dart';
+import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 import 'package:campus_cart/features/business/data/models/business_model.dart';
 import 'package:campus_cart/features/business/data/models/business_products_model.dart';
 import 'package:campus_cart/features/business/domain/repositories/business_repository.dart';
@@ -60,6 +61,46 @@ class BusinessRepositoryImpl extends BusinessRepository {
   @override
   Future<BusinessProductsModel> getBusinessProducts() async {
     return await businessRemoteDataSource.getBusinessProducts();
+  }
+
+  @override
+  Future<BusinessProductByIdModel> getBusinessProductById(
+    String productId,
+  ) async {
+    return await businessRemoteDataSource.getBusinessProductById(productId);
+  }
+
+  @override
+  Future<CreateProductsModel> createProduct({
+    required String name,
+    required String description,
+    required double price,
+    required bool isAvailable,
+    required int stockCount,
+    required List<File> images,
+    required String businessName,
+    required String productCategoryName,
+  }) async {
+    return await businessRemoteDataSource.createProduct(
+      name: name,
+      description: description,
+      price: price,
+      stockCount: stockCount,
+      isAvailable: isAvailable,
+      images: images,
+      businessName: businessName,
+      productCategoryName: productCategoryName,
+    );
+  }
+
+  @override
+  Future<BusinessCategoriesModel> getBusinessCategories() async {
+    return await businessRemoteDataSource.getBusinessCategories();
+  }
+
+  @override
+  Future<BusinessCategoriesModel> getBusinessProductCategories() async {
+    return await businessRemoteDataSource.getBusinessProductCategories();
   }
 
   @override

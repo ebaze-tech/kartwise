@@ -17,7 +17,6 @@ class UpdatePassword extends StatefulWidget {
 
 class _UpdatePasswordState extends State<UpdatePassword> {
   final _formKey = GlobalKey<FormState>();
-  // Fixed typo in controller name
   final TextEditingController _currentPasswordController =
       TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -47,7 +46,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/user_profile');
+            Navigator.of(context).pushNamed('/user_profile');
           },
         ),
         iconTheme: const IconThemeData(color: DefaultColors.background),
@@ -110,8 +109,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
                         isError: false,
                       );
                       context.read<AuthBloc>().add(LogoutEvent());
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
+                      Navigator.of(context).pushNamedAndRemoveUntil(
                         '/signin_account',
                         (route) => false,
                       );

@@ -56,7 +56,7 @@ class _UpdateEmailState extends State<UpdateEmail> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/user_profile');
+            Navigator.of(context).pushNamed('/user_profile');
           },
         ),
         iconTheme: const IconThemeData(color: DefaultColors.background),
@@ -115,7 +115,9 @@ class _UpdateEmailState extends State<UpdateEmail> {
                         context: context,
                         isError: false,
                       );
-                      Navigator.pushNamed(context, '/confirm_email_update');
+                      Navigator.of(
+                        context,
+                      ).pushNamed('/confirm_email_update');
                     } else if (state is RequestEmailUpdateError) {
                       CustomSnackBar.show(
                         message: state.errorMessage,
@@ -132,6 +134,7 @@ class _UpdateEmailState extends State<UpdateEmail> {
                           : "Request Email Update",
                       isIconButton: false,
                       onPressed: isLoading ? () {} : _updateEmail,
+                      buttonColor: DefaultColors.primary,
                     );
                   },
                 ),

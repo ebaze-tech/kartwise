@@ -13,13 +13,13 @@ class CustomError extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: DefaultColors.danger,
-            size: 50,
-          ),
+          const Icon(Icons.error_outline, color: DefaultColors.error, size: 50),
           const SizedBox(height: 16),
-          Text(message, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
           SizedBox(height: 20),
           Button(
             onPressed: onRetry,

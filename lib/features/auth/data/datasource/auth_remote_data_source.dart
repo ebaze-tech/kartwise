@@ -111,11 +111,11 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<UserProfileModel> updateUserProfile(String university) async {
+  Future<UserProfileModel> updateUserProfile(String permanentAddress) async {
     try {
       final response = await apiClient.dio.patch(
         '/accounts/me',
-        data: {'university': university},
+        data: {'permanentAddress': permanentAddress},
       );
       print(response.data);
       return UserProfileModel.fromJson(response.data);
