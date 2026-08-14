@@ -29,6 +29,7 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
       body: BlocConsumer<BusinessBloc, BusinessState>(
         listener: (context, state) {
           if (state is BusinessLoaded) {
+            print('Business Loaded: ${state.data}');
             if (state.data.isEmpty) {
               Navigator.of(context).pushReplacementNamed('/register_business');
               return;
@@ -60,15 +61,18 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
           }
 
           if (state is BusinessError) {
-            return Center(
-              child: CustomError(
-                message: 'An error occurred. Try again.',
-                onRetry: () {
-                  context.read<BusinessBloc>().add(GetBusinessEvent());
-                },
-              ),
-            );
+            print('Business Error: ${state.errorMessage}');
+            Navigator.of(context).pushReplacementNamed('/register_business');
           }
+          //   return Center(
+          //     child: CustomError(
+          //       message: 'An error occurred. Try again.',
+          //       onRetry: () {
+          //         context.read<BusinessBloc>().add(GetBusinessEvent());
+          //       },
+          //     ),
+          //   );
+          // }
 
           return const SizedBox.shrink();
         },

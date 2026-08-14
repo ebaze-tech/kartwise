@@ -79,7 +79,7 @@ class _AddProductState extends State<AddProduct> {
 
   void _submitProduct() {
     if (_formKey.currentState!.validate()) {
-      debugPrint('isAvailable before request: $_isAvailableController');
+      print('isAvailable before request: $_isAvailableController');
       if (_selectedProductCategory == null ||
           _selectedProductCategory!.isEmpty) {
         CustomSnackBar.show(

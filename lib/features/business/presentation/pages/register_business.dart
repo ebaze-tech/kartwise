@@ -225,6 +225,7 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
                             },
                             builder: (context, state) {
                               if (state is BusinessCategoriesLoaded) {
+                                print(state.data.toString());
                                 return CustomDropdownField<String>(
                                   labelText: 'Business Category',
                                   icon: Icons.category,

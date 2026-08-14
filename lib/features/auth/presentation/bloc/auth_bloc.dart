@@ -198,7 +198,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final response = await updateProfileUsecase.call(event.permanentAddress);
       print(response.data);
       emit(
-        UpdatePermanentAddressSuccess(data: response.data, message: response.message),
+        UpdatePermanentAddressSuccess(
+          data: response.data,
+          message: response.message,
+        ),
       );
     } catch (e) {
       emit(UpdatePermanentAddressError(errorMessage: _getCleanErrorMessage(e)));
