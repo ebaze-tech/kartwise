@@ -1,16 +1,19 @@
 import 'dart:io';
-import 'package:campus_cart/components/button.dart';
-import 'package:campus_cart/components/dropdown.dart';
-import 'package:campus_cart/components/form.dart';
-import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/components/toggle.dart';
-import 'package:campus_cart/core/theme/theme.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:campus_cart/components/form.dart';
+import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/components/button.dart';
+import 'package:campus_cart/components/toggle.dart';
+import 'package:campus_cart/components/dropdown.dart';
+import 'package:campus_cart/components/snackbar.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
+import 'package:campus_cart/features/business/presentation/bloc/categories_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/categories_state.dart';
+import 'package:campus_cart/features/business/presentation/bloc/categories_event.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({super.key});
@@ -45,7 +48,7 @@ class _AddProductState extends State<AddProduct> {
   @override
   void initState() {
     super.initState();
-    context.read<BusinessBloc>().add(GetBusinessProductCategoriesEvent());
+    context.read<ProductCategoriesBloc>().add(GetProductCategoriesEvent());
   }
 
   Future<void> _pickImages() async {
@@ -192,16 +195,16 @@ class _AddProductState extends State<AddProduct> {
                         icon: Icons.price_change_outlined,
                         readOnly: false,
                       ),
-                      BlocBuilder<BusinessBloc, BusinessState>(
+                      BlocBuilder<ProductCategoriesBloc, ProductCategoriesState>(
                         builder: (context, catState) {
-                          if (catState is BusinessCategoriesError) {
+                          if (catState is ProductCategoriesError) {
                             return const Padding(
                               padding: EdgeInsets.all(16.0),
                               child: Center(child: CircularProgressIndicator()),
                             );
                           }
 
-                          if (catState is BusinessCategoriesLoaded) {
+                          if (catState is ProductCategoriesLoaded) {
                             return CustomDropdownField<String>(
                               labelText: "Product Category",
                               icon: Icons.category_outlined,
@@ -420,9 +423,7 @@ class _AddProductState extends State<AddProduct> {
                 ?trailingHeader,
               ],
             ),
-          ),
-          const Divider(height: 1),
-          ...items,
+          ),          ...items,
         ],
       ),
     );

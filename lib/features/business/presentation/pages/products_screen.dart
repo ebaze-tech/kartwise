@@ -1,14 +1,14 @@
-import 'package:campus_cart/components/animated_loader.dart';
-import 'package:campus_cart/components/button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:campus_cart/components/error.dart';
-import 'package:campus_cart/components/floating_action.dart';
-import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/components/button.dart';
+import 'package:campus_cart/components/snackbar.dart';
+import 'package:campus_cart/components/animated_loader.dart';
+import 'package:campus_cart/components/floating_action.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -121,6 +121,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 const SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 10),
                     itemCount: state.data?.length ?? 0,
                     itemBuilder: (context, index) {
                       final product = state.data?[index];

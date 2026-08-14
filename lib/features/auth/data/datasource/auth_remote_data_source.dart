@@ -1,13 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:campus_cart/core/network/dio.dart';
-import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
-import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
-import 'package:campus_cart/features/auth/data/models/login_model.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:campus_cart/features/auth/data/models/otp_model.dart';
-import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
+import 'package:campus_cart/features/auth/data/models/login_model.dart';
+import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/registration_model.dart';
 import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
+import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
 
 class AuthRemoteDataSource {
   final ApiClient apiClient;
@@ -160,6 +160,6 @@ class AuthRemoteDataSource {
       if (messageData is List) return Exception(messageData.join('\n'));
       return Exception(messageData.toString());
     }
-    return Exception('A network error occurred. Please try again.');
+    return Exception('A network error occurred');
   }
 }

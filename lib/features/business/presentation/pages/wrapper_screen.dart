@@ -1,12 +1,12 @@
-import 'package:campus_cart/components/animated_loader.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:campus_cart/components/error.dart';
 import 'package:campus_cart/components/snackbar.dart';
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
 import 'package:campus_cart/features/business/presentation/cubit/activate_business.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BusinessWrapper extends StatefulWidget {
   const BusinessWrapper({super.key});
@@ -19,7 +19,10 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
   @override
   void initState() {
     super.initState();
+    _fetchBusinessData();
+  }
 
+  void _fetchBusinessData() {
     context.read<BusinessBloc>().add(GetBusinessEvent());
   }
 
@@ -30,13 +33,13 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
         listener: (context, state) {
           if (state is BusinessLoaded) {
             print('Business Loaded: ${state.data}');
+
             if (state.data.isEmpty) {
               Navigator.of(context).pushReplacementNamed('/register_business');
               return;
             }
 
             final business = state.data.first;
-
             context.read<ActiveBusinessCubit>().setActiveBusiness(business.id);
 
             Navigator.of(
@@ -45,6 +48,13 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
           }
 
           if (state is BusinessError) {
+            if (state.errorMessage.contains('No business data found')) {
+              print('User has no business. Routing to registration...');
+              Navigator.of(context).pushReplacementNamed('/register_business');
+              return;
+            }
+
+            print('Business Error: ${state.errorMessage}');
             CustomSnackBar.show(
               context: context,
               message: state.errorMessage,
@@ -61,18 +71,18 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
           }
 
           if (state is BusinessError) {
-            print('Business Error: ${state.errorMessage}');
-            Navigator.of(context).pushReplacementNamed('/register_business');
+            if (state.errorMessage.contains('No business data found')) {
+              return const SizedBox.shrink();
+            }
+
+            // For REAL errors, show the retry UI
+            return Center(
+              child: CustomError(
+                message: 'Failed to load business data',
+                onRetry: _fetchBusinessData,
+              ),
+            );
           }
-          //   return Center(
-          //     child: CustomError(
-          //       message: 'An error occurred. Try again.',
-          //       onRetry: () {
-          //         context.read<BusinessBloc>().add(GetBusinessEvent());
-          //       },
-          //     ),
-          //   );
-          // }
 
           return const SizedBox.shrink();
         },

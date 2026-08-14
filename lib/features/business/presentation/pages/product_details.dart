@@ -1,17 +1,16 @@
 import 'dart:async';
-
-import 'package:campus_cart/components/animated_loader.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:campus_cart/components/error.dart';
+import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/components/button.dart';
 import 'package:campus_cart/components/carousel.dart';
-import 'package:campus_cart/components/error.dart';
 import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/features/business/domain/entities/product_entity.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductDetails extends StatefulWidget {
   const ProductDetails({super.key});
@@ -172,7 +171,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                               ),
                         ),
                         SizedBox(height: 10),
-                        Divider(),
+
                         SizedBox(height: 10),
                         Row(
                           children: [
@@ -197,9 +196,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
-                        Divider(),
-                        SizedBox(height: 10),
+                        SizedBox(height: 20),
                         Text(
                           "Description",
                           style: Theme.of(context).textTheme.titleMedium
@@ -211,11 +208,17 @@ class _ProductDetailsState extends State<ProductDetails> {
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 30),
                         Button(
                           buttonText: "Edit Product",
                           isIconButton: false,
-                          onPressed: () {},
+                          onPressed: () {
+                            print(displayedProduct.id);
+                            Navigator.of(context).pushNamed(
+                              '/edit_product',
+                              arguments: displayedProduct,
+                            );
+                          },
                         ),
                         SizedBox(height: 40),
                       ],

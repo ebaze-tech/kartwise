@@ -1,51 +1,56 @@
-import 'package:campus_cart/components/animated_loader.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:campus_cart/core/network/dio.dart';
 import 'package:campus_cart/core/theme/theme.dart';
-import 'package:campus_cart/features/auth/data/datasource/auth_remote_data_source.dart';
-import 'package:campus_cart/features/auth/domain/repositories/auth_repository_impl.dart';
-import 'package:campus_cart/features/auth/domain/usecases/confirm_email_update_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/update_password_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/update_profile_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'features/onboarding/presentation/onboarding.dart';
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
-import 'package:campus_cart/features/auth/presentation/pages/confirm_email_update.dart';
-import 'package:campus_cart/features/auth/presentation/pages/create_account.dart';
+import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
 import 'package:campus_cart/features/auth/presentation/pages/update_email.dart';
-import 'package:campus_cart/features/auth/presentation/pages/update_password.dart';
-import 'package:campus_cart/features/auth/presentation/pages/update_profile.dart';
 import 'package:campus_cart/features/auth/presentation/pages/user_profile.dart';
-import 'package:campus_cart/features/business/data/datasource/business_remote_data_source.dart';
-import 'package:campus_cart/features/business/domain/repositories/business_repository_impl.dart';
-import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
-import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
-import 'package:campus_cart/features/business/domain/usecases/business_update_usecase.dart';
-import 'package:campus_cart/features/business/domain/usecases/business_usecase.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
-import 'package:campus_cart/features/business/presentation/cubit/activate_business.dart';
+import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
+import 'package:campus_cart/features/auth/presentation/pages/login_account.dart';
+import 'package:campus_cart/features/auth/presentation/pages/create_account.dart';
+import 'package:campus_cart/features/auth/presentation/pages/update_profile.dart';
+import 'package:campus_cart/features/auth/presentation/pages/verify_account.dart';
+import 'package:campus_cart/features/onboarding/presentation/onboarding_two.dart';
+import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:campus_cart/features/auth/presentation/pages/update_password.dart';
 import 'package:campus_cart/features/business/presentation/pages/add_product.dart';
-import 'package:campus_cart/features/business/presentation/pages/business_created.dart';
-import 'package:campus_cart/features/business/presentation/pages/business_dashboard.dart';
+import 'package:campus_cart/features/auth/presentation/pages/dashboard/buyer.dart';
+import 'package:campus_cart/features/business/presentation/pages/edit_product.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/onboarding/presentation/onboarding_three.dart';
+import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_usecase.dart';
+import 'package:campus_cart/features/business/presentation/pages/wrapper_screen.dart';
+import 'package:campus_cart/features/business/presentation/bloc/categories_bloc.dart';
+import 'package:campus_cart/features/business/domain/usecases/categories_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_profile_usecase.dart';
 import 'package:campus_cart/features/business/presentation/pages/product_details.dart';
 import 'package:campus_cart/features/business/presentation/pages/products_screen.dart';
-import 'package:campus_cart/features/business/presentation/pages/register_business.dart';
-import 'package:campus_cart/features/auth/presentation/pages/dashboard/buyer.dart';
-import 'package:campus_cart/features/auth/presentation/pages/login_account.dart';
-import 'package:campus_cart/features/auth/presentation/pages/verify_account.dart';
 import 'package:campus_cart/features/business/presentation/pages/update_business.dart';
-import 'package:campus_cart/features/business/presentation/pages/wrapper_screen.dart';
-import 'package:campus_cart/features/onboarding/presentation/onboarding_three.dart';
-import 'package:campus_cart/features/onboarding/presentation/onboarding_two.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'features/onboarding/presentation/onboarding.dart';
+import 'package:campus_cart/features/auth/data/datasource/auth_remote_data_source.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_password_usecase.dart';
+import 'package:campus_cart/features/auth/presentation/pages/confirm_email_update.dart';
+import 'package:campus_cart/features/business/presentation/pages/business_created.dart';
+import 'package:campus_cart/features/business/presentation/cubit/activate_business.dart';
+import 'package:campus_cart/features/auth/domain/repositories/auth_repository_impl.dart';
+import 'package:campus_cart/features/business/presentation/pages/register_business.dart';
+import 'package:campus_cart/features/business/presentation/pages/business_dashboard.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_update_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/confirm_email_update_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
+import 'package:campus_cart/features/business/data/datasource/business_remote_data_source.dart';
+import 'package:campus_cart/features/business/domain/repositories/business_repository_impl.dart';
+import 'package:campus_cart/features/business/data/datasource/categories_remote_data_source.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
+import 'package:campus_cart/features/business/domain/repositories/categories_repository_impl.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +58,8 @@ Future<void> main() async {
 
   late AuthBloc authBloc;
   late BusinessBloc businessBloc;
+  late BusinessCategoriesBloc businessCategoriesBloc;
+  late ProductCategoriesBloc productCategoriesBloc;
 
   final apiClient = ApiClient(
     onUnauthenticated: () {
@@ -69,6 +76,12 @@ Future<void> main() async {
   );
   final businessRepository = BusinessRepositoryImpl(
     businessRemoteDataSource: businessRemoteDataSource,
+  );
+  final categoriesRemoteDataSource = CategoriesRemoteDataSource(
+    apiClient: apiClient,
+  );
+  final categoriesRepository = CategoriesRepositoryImpl(
+    categoriesRemoteDataSource: categoriesRemoteDataSource,
   );
 
   authBloc = AuthBloc(
@@ -103,14 +116,37 @@ Future<void> main() async {
     getBusinessUseCase: BusinessUseCase(repository: businessRepository),
   );
 
-  runApp(MyApp(authBloc: authBloc, businessBloc: businessBloc));
+  businessCategoriesBloc = BusinessCategoriesBloc(
+    categoriesUseCase: CategoriesUseCase(repository: categoriesRepository),
+  );
+
+  productCategoriesBloc = ProductCategoriesBloc(
+    categoriesUseCase: CategoriesUseCase(repository: categoriesRepository),
+  );
+
+  runApp(
+    MyApp(
+      authBloc: authBloc,
+      businessBloc: businessBloc,
+      businessCategoriesBloc: businessCategoriesBloc,
+      productCategoriesBloc: productCategoriesBloc,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   final AuthBloc authBloc;
   final BusinessBloc businessBloc;
+  final BusinessCategoriesBloc businessCategoriesBloc;
+  final ProductCategoriesBloc productCategoriesBloc;
 
-  const MyApp({super.key, required this.authBloc, required this.businessBloc});
+  const MyApp({
+    super.key,
+    required this.authBloc,
+    required this.businessBloc,
+    required this.businessCategoriesBloc,
+    required this.productCategoriesBloc,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -119,9 +155,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider.value(value: authBloc),
         BlocProvider.value(value: businessBloc),
-        BlocProvider<ActiveBusinessCubit>(
-          create: (context) => ActiveBusinessCubit(),
-        ),
+        BlocProvider.value(value: businessCategoriesBloc),
+        BlocProvider.value(value: productCategoriesBloc),
+        BlocProvider(create: (context) => ActiveBusinessCubit()),
       ],
       child: MaterialApp(
         title: 'PeerPlaza',
@@ -169,6 +205,7 @@ class MyApp extends StatelessWidget {
           '/business_products': (context) => ProductsScreen(),
           '/add_product': (context) => const AddProduct(),
           '/product_details': (context) => const ProductDetails(),
+          '/edit_product': (context) => EditProduct(),
         },
       ),
     );

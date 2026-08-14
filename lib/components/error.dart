@@ -1,6 +1,6 @@
-import 'package:campus_cart/components/button.dart';
-import 'package:campus_cart/core/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/components/button.dart';
 
 class CustomError extends StatelessWidget {
   final String message;
@@ -23,7 +23,7 @@ class CustomError extends StatelessWidget {
           SizedBox(height: 20),
           Button(
             onPressed: onRetry,
-            buttonText: 'Try Again',
+            buttonText: 'Refresh',
             isIconButton: false,
             buttonColor: DefaultColors.gray,
           ),

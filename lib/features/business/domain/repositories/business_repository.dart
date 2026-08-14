@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 import 'package:campus_cart/features/business/data/models/business_model.dart';
 import 'package:campus_cart/features/business/data/models/business_products_model.dart';
+import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 
 abstract class BusinessRepository {
   Future<BusinessModel> createBusiness(
@@ -30,6 +30,12 @@ abstract class BusinessRepository {
   Future<BusinessProductsModel> getBusinessProducts();
 
   Future<BusinessProductByIdModel> getBusinessProductById(String productId);
+
+  Future<UpdateProductsModel> updateBusinessProductById(
+    bool? isAvailable,
+    int? stockCount,
+    String productId
+  );
 
   Future<BusinessCategoriesModel> getBusinessCategories();
 

@@ -1,11 +1,11 @@
-import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
-import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
-import 'package:campus_cart/features/business/domain/usecases/business_update_usecase.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:campus_cart/features/business/domain/usecases/business_usecase.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_update_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_products_usecase.dart';
+import 'package:campus_cart/features/business/domain/usecases/business_registration_usecase.dart';
 
 class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
   final BusinessRegistrationUseCase _businessRegistrationUseCase;
@@ -25,10 +25,9 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     on<GetLocalBusinessEvent>(_onGetLocalBusiness);
     on<GetBusinessProductsEvent>(_onGetBusinessProducts);
     on<GetBusinessProductByIdEvent>(_onGetBusinessProductById);
+    on<UpdateBusinessProductByIdEvent>(_onUpdateBusinessProductById);
     on<GetBusinessEvent>(_onGetBusiness);
     on<CreateProductEvent>(_onCreateProduct);
-    on<GetBusinessCategoriesEvent>(_onGetBusinessCategories);
-    on<GetBusinessProductCategoriesEvent>(_onGetBusinessProductCategories);
   }
 
   Future<void> _onCreateBusiness(
@@ -180,10 +179,33 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         event.productId,
       );
       emit(
-        BusinessProductByIdLoaded(message: response.message, data: response.data),
+        BusinessProductByIdLoaded(
+          message: response.message,
+          data: response.data,
+        ),
       );
     } catch (e) {
       emit(BusinessProductByIdError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onUpdateBusinessProductById(
+    UpdateBusinessProductByIdEvent event,
+    Emitter<BusinessState> emit,
+  ) async {
+    emit(UpdateBusinessProductByIdLoading());
+    try {
+      final response = await _getBusinessProductsUseCase
+          .updateBusinessProductById(
+            event.isAvailable,
+            event.stockCount,
+            event.productId,
+          );
+      emit(UpdateBusinessProductByIdLoaded(message: response.message));
+    } catch (e) {
+      emit(
+        UpdateBusinessProductByIdError(errorMessage: _getCleanErrorMessage(e)),
+      );
     }
   }
 
@@ -211,44 +233,6 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
       emit(CreateProductLoaded(message: response.message, data: response.data));
     } catch (e) {
       emit(CreateProductError(errorMessage: _getCleanErrorMessage(e)));
-    }
-  }
-
-  Future<void> _onGetBusinessCategories(
-    GetBusinessCategoriesEvent event,
-    Emitter<BusinessState> emit,
-  ) async {
-    emit(BusinessCategoriesLoading());
-    try {
-      final response = await _getBusinessProductsUseCase
-          .getBusinessCategories();
-      emit(
-        BusinessCategoriesLoaded(
-          message: response.message,
-          data: response.data,
-        ),
-      );
-    } catch (e) {
-      emit(BusinessCategoriesError(errorMessage: _getCleanErrorMessage(e)));
-    }
-  }
-
-  Future<void> _onGetBusinessProductCategories(
-    GetBusinessProductCategoriesEvent event,
-    Emitter<BusinessState> emit,
-  ) async {
-    emit(BusinessCategoriesLoading());
-    try {
-      final response = await _getBusinessProductsUseCase
-          .getBusinessProductCategories();
-      emit(
-        BusinessCategoriesLoaded(
-          message: response.message,
-          data: response.data,
-        ),
-      );
-    } catch (e) {
-      emit(BusinessCategoriesError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 

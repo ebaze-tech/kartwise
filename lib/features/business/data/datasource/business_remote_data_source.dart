@@ -1,10 +1,9 @@
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:campus_cart/core/network/dio.dart';
-import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 import 'package:campus_cart/features/business/data/models/business_model.dart';
 import 'package:campus_cart/features/business/data/models/business_products_model.dart';
-import 'package:dio/dio.dart';
+import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 
 class BusinessRemoteDataSource {
   final ApiClient apiClient;
@@ -156,13 +155,33 @@ class BusinessRemoteDataSource {
     }
   }
 
-  Future<BusinessProductByIdModel> getBusinessProductById(String productId) async {
+  Future<BusinessProductByIdModel> getBusinessProductById(
+    String productId,
+  ) async {
     try {
       final response = await apiClient.dio.get('/business/products/$productId');
       print(response.data);
       return BusinessProductByIdModel.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to fetch business product.');
+    }
+  }
+
+  Future<UpdateProductsModel> updateBusinessProductById(
+    bool? isAvailable,
+    int? stockCount,
+    String productId,
+  ) async {
+    try {
+      final response = await apiClient.dio.patch(
+        '/business/products/$productId',
+        data: {'isAvailable': isAvailable, 'stockCount': stockCount},
+      );
+      print(response.data);
+      return UpdateProductsModel.fromJson(response.data);
+    } catch (e) {
+      print(e.toString());
+      throw Exception("Failed to update business product");
     }
   }
 
@@ -229,6 +248,6 @@ class BusinessRemoteDataSource {
       if (messageData is List) return Exception(messageData.join('\n'));
       return Exception(messageData.toString());
     }
-    return Exception('A network error occurred. Please try again.');
+    return Exception('A network error occurred');
   }
 }
