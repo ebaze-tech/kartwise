@@ -43,3 +43,13 @@ class CreateProductsModel {
     );
   }
 }
+
+class UpdateProductsModel {
+  final String message;
+
+  UpdateProductsModel({required this.message});
+
+  factory UpdateProductsModel.fromJson(Map<String, dynamic> json) {
+    return UpdateProductsModel(message: json['message'] as String);
+  }
+}

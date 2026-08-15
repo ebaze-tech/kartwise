@@ -1,5 +1,5 @@
-import 'package:campus_cart/core/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:campus_cart/core/theme/theme.dart';
 
 class Button extends StatelessWidget {
   final String buttonText;
@@ -18,7 +18,7 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: SizedBox(
         height: 50,
         width: double.infinity,

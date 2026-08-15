@@ -1,6 +1,5 @@
-import 'package:campus_cart/features/business/domain/entities/business_category_entity.dart';
-import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
 import 'package:campus_cart/features/business/domain/entities/product_entity.dart';
+import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
 
 abstract class BusinessState {}
 
@@ -13,6 +12,12 @@ class BusinessLoaded extends BusinessState {
   final List<BusinessEntity> data;
 
   BusinessLoaded({required this.message, required this.data});
+}
+
+class BusinessError extends BusinessState {
+  final String errorMessage;
+
+  BusinessError({required this.errorMessage});
 }
 
 class BusinessUpdateLoading extends BusinessState {}
@@ -30,12 +35,6 @@ class BusinessUpdateError extends BusinessState {
   BusinessUpdateError({required this.errorMessage});
 }
 
-class BusinessError extends BusinessState {
-  final String errorMessage;
-
-  BusinessError({required this.errorMessage});
-}
-
 class BusinessProductsInitial extends BusinessState {}
 
 class BusinessProductsLoading extends BusinessState {}
@@ -45,6 +44,12 @@ class BusinessProductsLoaded extends BusinessState {
   final List<ProductEntity>? data;
 
   BusinessProductsLoaded({required this.message, this.data});
+}
+
+class BusinessProductsError extends BusinessState {
+  final String errorMessage;
+
+  BusinessProductsError({required this.errorMessage});
 }
 
 class BusinessProductByIdLoading extends BusinessState {}
@@ -62,10 +67,18 @@ class BusinessProductByIdError extends BusinessState {
   BusinessProductByIdError({required this.errorMessage});
 }
 
-class BusinessProductsError extends BusinessState {
+class UpdateBusinessProductByIdLoading extends BusinessState {}
+
+class UpdateBusinessProductByIdLoaded extends BusinessState {
+  final String message;
+
+  UpdateBusinessProductByIdLoaded({required this.message});
+}
+
+class UpdateBusinessProductByIdError extends BusinessState {
   final String errorMessage;
 
-  BusinessProductsError({required this.errorMessage});
+  UpdateBusinessProductByIdError({required this.errorMessage});
 }
 
 class LocalBusinessLoaded extends BusinessState {
@@ -95,19 +108,4 @@ class CreateProductError extends BusinessState {
   final String errorMessage;
 
   CreateProductError({required this.errorMessage});
-}
-
-class BusinessCategoriesLoading extends BusinessState {}
-
-class BusinessCategoriesLoaded extends BusinessState {
-  final String message;
-  final List<BusinessCategoryEntity>? data;
-
-  BusinessCategoriesLoaded({required this.message, this.data});
-}
-
-class BusinessCategoriesError extends BusinessState {
-  final String errorMessage;
-
-  BusinessCategoriesError({required this.errorMessage});
 }

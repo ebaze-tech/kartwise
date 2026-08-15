@@ -1,16 +1,16 @@
-import 'package:campus_cart/components/animated_loader.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:campus_cart/components/error.dart';
+import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/components/profile.dart';
 import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/components/animated_loader.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
 import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({super.key});
@@ -80,18 +80,8 @@ class _UserProfileState extends State<UserProfile> {
               builder: (context, businessState) {
                 if (authState is UserProfileLoading ||
                     businessState is BusinessLoading) {
-                  return AnimatedLoadingPage(message: 'Loading profile...');
-                }
-
-                if (authState is UserProfileLoaded &&
-                    businessState is BusinessLoaded) {
-                  return Center(
-                    child: Profile(
-                      userProfileEntity: authState.data,
-                      businessEntity: businessState.data.isNotEmpty
-                          ? businessState.data.first
-                          : null,
-                    ),
+                  return const AnimatedLoadingPage(
+                    message: 'Loading profile...',
                   );
                 }
 
@@ -103,15 +93,31 @@ class _UserProfileState extends State<UserProfile> {
                   );
                 }
 
-                if (businessState is BusinessError) {
-                  return CustomError(
-                    message: businessState.errorMessage,
-                    onRetry: () =>
-                        context.read<BusinessBloc>().add(GetBusinessEvent()),
+                if (authState is UserProfileLoaded) {
+                  if (businessState is BusinessError &&
+                      !businessState.errorMessage.contains(
+                        'No business data found',
+                      )) {
+                    return CustomError(
+                      message: businessState.errorMessage,
+                      onRetry: () =>
+                          context.read<BusinessBloc>().add(GetBusinessEvent()),
+                    );
+                  }
+
+                  return Center(
+                    child: Profile(
+                      userProfileEntity: authState.data,
+                      businessEntity:
+                          (businessState is BusinessLoaded &&
+                              businessState.data.isNotEmpty)
+                          ? businessState.data.first
+                          : null,
+                    ),
                   );
                 }
 
-                return const SizedBox.shrink();
+                return const AnimatedLoadingPage(message: 'Loading profile...');
               },
             );
           },

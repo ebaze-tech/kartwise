@@ -1,17 +1,18 @@
 import 'dart:io';
-
-import 'package:campus_cart/components/animated_loader.dart';
-import 'package:campus_cart/components/button.dart';
-import 'package:campus_cart/components/dropdown.dart';
-import 'package:campus_cart/components/form.dart';
-import 'package:campus_cart/components/snackbar.dart';
-import 'package:campus_cart/core/theme/theme.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
-import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:campus_cart/components/form.dart';
+import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/components/button.dart';
+import 'package:campus_cart/components/dropdown.dart';
+import 'package:campus_cart/components/snackbar.dart';
+import 'package:campus_cart/components/animated_loader.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_event.dart';
+import 'package:campus_cart/features/business/presentation/bloc/business_state.dart';
+import 'package:campus_cart/features/business/presentation/bloc/categories_bloc.dart';
+import 'package:campus_cart/features/business/presentation/bloc/categories_state.dart';
 
 class UpdateBusiness extends StatefulWidget {
   const UpdateBusiness({super.key});
@@ -235,14 +236,11 @@ class _UpdateBusinessState extends State<UpdateBusiness> {
                         readOnly: false,
                       ),
 
-                      BlocBuilder<BusinessBloc, BusinessState>(
+                      BlocBuilder<
+                        BusinessCategoriesBloc,
+                        BusinessCategoriesState
+                      >(
                         builder: (context, categoryState) {
-                          // if (categoryState is BusinessCategoryLoading) {
-                          //   return const Center(
-                          //     child: CircularProgressIndicator(),
-                          //   );
-                          // }
-
                           if (categoryState is BusinessCategoriesLoaded) {
                             final categories = categoryState.data ?? [];
 

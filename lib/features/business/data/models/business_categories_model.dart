@@ -1,8 +1,8 @@
-import 'package:campus_cart/features/business/domain/entities/business_category_entity.dart';
+import 'package:campus_cart/features/business/domain/entities/category_entity.dart';
 
 class BusinessCategoriesModel {
   final String message;
-  final List<BusinessCategoryEntity>? data;
+  final List<CategoryEntity>? data;
   BusinessCategoriesModel({required this.message, required this.data});
 
   factory BusinessCategoriesModel.fromJson(Map<String, dynamic> json) {
@@ -12,7 +12,7 @@ class BusinessCategoriesModel {
           ?.where((item) => item != null)
           .map(
             (item) =>
-                BusinessCategoryEntity.fromJson(item as Map<String, dynamic>),
+                CategoryEntity.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
     );

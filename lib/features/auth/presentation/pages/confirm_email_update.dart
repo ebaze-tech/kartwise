@@ -1,12 +1,12 @@
+import 'package:pinput/pinput.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:campus_cart/components/button.dart';
-import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/components/spinner.dart';
+import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pinput/pinput.dart';
 
 class ConfirmEmailUpdate extends StatefulWidget {
   const ConfirmEmailUpdate({super.key});
@@ -35,7 +35,7 @@ class _ConfirmEmailUpdateState extends State<ConfirmEmailUpdate> {
         isError: true,
       );
     } else {
-      print('Entered OTP: $pin');
+      // print('Entered OTP: $pin');
       BlocProvider.of<AuthBloc>(
         context,
       ).add(ConfirmEmailUpdateEvent(otp: _otpController.text.trim()));

@@ -1,10 +1,9 @@
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:campus_cart/core/network/dio.dart';
-import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 import 'package:campus_cart/features/business/data/models/business_model.dart';
 import 'package:campus_cart/features/business/data/models/business_products_model.dart';
-import 'package:dio/dio.dart';
+import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 
 class BusinessRemoteDataSource {
   final ApiClient apiClient;
@@ -31,7 +30,7 @@ class BusinessRemoteDataSource {
         'address': address,
         'isActive': isActive,
       };
-      print(formDataMap);
+      // print(formDataMap);
 
       if (bannerImage != null) {
         formDataMap['bannerImage'] = await MultipartFile.fromFile(
@@ -46,7 +45,7 @@ class BusinessRemoteDataSource {
         '/business/setup',
         data: formData,
       );
-      print(response.data);
+      // print(response.data);
       return BusinessModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -74,7 +73,7 @@ class BusinessRemoteDataSource {
         'address': address,
         'isActive': isActive,
       };
-      print(formDataMap);
+      // print(formDataMap);
 
       if (bannerImage != null) {
         formDataMap['bannerImage'] = await MultipartFile.fromFile(
@@ -89,7 +88,7 @@ class BusinessRemoteDataSource {
         '/business/update/$id',
         data: formData,
       );
-      print(response.data);
+      // print(response.data);
       return BusinessModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -99,18 +98,17 @@ class BusinessRemoteDataSource {
   Future<BusinessModel> getBusiness() async {
     try {
       final response = await apiClient.dio.get('/business/me');
-      print(response.data);
+      // print(response.data);
+
       Map<String, dynamic> responseData = Map.from(response.data);
 
       if (responseData['data'] is List) {
         final List dataList = responseData['data'] as List;
-
         if (dataList.isEmpty) {
           throw Exception('No business data found.');
         }
-
-        responseData['data'] = dataList[0];
       }
+
       return BusinessModel.fromJson(responseData);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -120,7 +118,7 @@ class BusinessRemoteDataSource {
   Future<BusinessCategoriesModel> getBusinessCategories() async {
     try {
       final response = await apiClient.dio.get('/business/categories');
-      print(response.data);
+      // print(response.data);
       if (response.data == null) {
         throw Exception('Server returned an empty response.');
       }
@@ -138,10 +136,10 @@ class BusinessRemoteDataSource {
     try {
       final response = await apiClient.dio.get('/business/products/categories');
 
-      print(response.data);
+      // print(response.data);
       return BusinessCategoriesModel.fromJson(response.data);
     } on DioException catch (e) {
-      print(e.toString());
+      // print(e.toString());
       throw _handleDioError(e);
     }
   }
@@ -149,20 +147,40 @@ class BusinessRemoteDataSource {
   Future<BusinessProductsModel> getBusinessProducts() async {
     try {
       final response = await apiClient.dio.get('/business/products');
-      print(response.data);
+      // print(response.data);
       return BusinessProductsModel.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to fetch business products.');
     }
   }
 
-  Future<BusinessProductByIdModel> getBusinessProductById(String productId) async {
+  Future<BusinessProductByIdModel> getBusinessProductById(
+    String productId,
+  ) async {
     try {
       final response = await apiClient.dio.get('/business/products/$productId');
-      print(response.data);
+      // print(response.data);
       return BusinessProductByIdModel.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to fetch business product.');
+    }
+  }
+
+  Future<UpdateProductsModel> updateBusinessProductById(
+    bool? isAvailable,
+    int? stockCount,
+    String productId,
+  ) async {
+    try {
+      final response = await apiClient.dio.patch(
+        '/business/products/$productId',
+        data: {'isAvailable': isAvailable, 'stockCount': stockCount},
+      );
+      // print(response.data);
+      return UpdateProductsModel.fromJson(response.data);
+    } catch (e) {
+      // print(e.toString());
+      throw Exception("Failed to update business product");
     }
   }
 
@@ -176,9 +194,9 @@ class BusinessRemoteDataSource {
     required String businessName,
     required String productCategoryName,
   }) async {
-    print(
-      'Creating product with name: $name, description: $description, price: $price, isAvailable: $isAvailable, stockCount: $stockCount, businessName: $businessName, productCategoryName: $productCategoryName, images count: ${images.length}, image mime types: ${images.map((image) => image.path.split('.').last).toList()}',
-    );
+    // print(
+    //   'Creating product with name: $name, description: $description, price: $price, isAvailable: $isAvailable, stockCount: $stockCount, businessName: $businessName, productCategoryName: $productCategoryName, images count: ${images.length}, image mime types: ${images.map((image) => image.path.split('.').last).toList()}'
+    // );
     try {
       Map<String, dynamic> formDataMap = {
         'name': name,
@@ -215,10 +233,10 @@ class BusinessRemoteDataSource {
         data: formData,
       );
 
-      print(response.data);
+      // print(response.data);
       return CreateProductsModel.fromJson(response.data);
     } on DioException catch (e) {
-      print(e.toString());
+      // print(e.toString());
       throw _handleDioError(e);
     }
   }
@@ -229,6 +247,6 @@ class BusinessRemoteDataSource {
       if (messageData is List) return Exception(messageData.join('\n'));
       return Exception(messageData.toString());
     }
-    return Exception('A network error occurred. Please try again.');
+    return Exception('A network error occurred');
   }
 }

@@ -1,16 +1,16 @@
-import 'package:campus_cart/features/auth/domain/usecases/confirm_email_update_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/update_password_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/update_profile_usecase.dart';
-import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
+import 'package:campus_cart/features/auth/domain/usecases/login_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/register_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/resend_otp_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/user_profile_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/verify_email_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_profile_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/update_password_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/confirm_email_update_usecase.dart';
+import 'package:campus_cart/features/auth/domain/usecases/request_email_update_usecase.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterUsecase registerUsecase;
@@ -100,7 +100,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final otp = await resendOtpUsecase.call();
       emit(AuthSuccess(message: otp.message, role: role));
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
       emit(AuthFailure(errorMessage: _getCleanErrorMessage(e)));
     }
   }
@@ -182,7 +182,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(UserProfileLoading());
     try {
       final response = await userProfileUsecase.call();
-      print(response.data);
+      // print(response.data);
       emit(UserProfileLoaded(data: response.data, message: response.message));
     } catch (e) {
       emit(UserProfileError(errorMessage: _getCleanErrorMessage(e)));
@@ -196,7 +196,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(UpdatePermanentAddressLoading());
     try {
       final response = await updateProfileUsecase.call(event.permanentAddress);
-      print(response.data);
+      // print(response.data);
       emit(
         UpdatePermanentAddressSuccess(
           data: response.data,

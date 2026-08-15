@@ -6,9 +6,9 @@ class CustomSearchBar extends StatefulWidget {
   final Function(String) onChanged;
 
   const CustomSearchBar({
-    super.key,
-    this.hintText = "Search products...",
+    this.hintText = 'Search...',
     required this.onChanged,
+    super.key,
   });
 
   @override
@@ -27,7 +27,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   void _clearSearch() {
     _controller.clear();
     widget.onChanged('');
-    FocusScope.of(context).unfocus(); // Hides keyboard
+    setState(() {});
+    FocusScope.of(context).unfocus();
   }
 
   @override
@@ -35,26 +36,27 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     return Container(
       height: 45,
       decoration: BoxDecoration(
-        color: DefaultColors.neutral.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: DefaultColors.neutral.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: TextField(
         controller: _controller,
         onChanged: widget.onChanged,
         decoration: InputDecoration(
           hintText: widget.hintText,
-          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: DefaultColors.neutral,
-              ),
+          hintStyle: Theme.of(context).textTheme.bodyMedium,
           prefixIcon: const Icon(Icons.search, color: DefaultColors.gray),
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear, color: DefaultColors.gray, size: 20),
+                  icon: const Icon(
+                    Icons.clear,
+                    color: DefaultColors.gray,
+                    size: 20,
+                  ),
                   onPressed: _clearSearch,
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
       ),
     );

@@ -1,5 +1,5 @@
-import 'package:campus_cart/features/business/domain/entities/business_category_entity.dart';
 import 'package:campus_cart/features/business/domain/entities/product_entity.dart';
+import 'package:campus_cart/features/business/domain/entities/category_entity.dart';
 
 class BusinessEntity {
   final String id;
@@ -11,7 +11,7 @@ class BusinessEntity {
   final String? bannerImageUrl;
   final bool isActive;
   final String categoryName;
-  final BusinessCategoryEntity? category;
+  final CategoryEntity? category;
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<ProductEntity>? products;
@@ -46,7 +46,7 @@ class BusinessEntity {
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       category: json['category'] != null
-          ? BusinessCategoryEntity.fromJson(
+          ? CategoryEntity.fromJson(
               json['category'] as Map<String, dynamic>,
             )
           : null,

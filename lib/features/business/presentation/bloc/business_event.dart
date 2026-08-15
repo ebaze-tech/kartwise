@@ -80,6 +80,13 @@ class GetBusinessProductByIdEvent extends BusinessEvent {
   GetBusinessProductByIdEvent({required this.productId});
 }
 
-class GetBusinessCategoriesEvent extends BusinessEvent {}
-
-class GetBusinessProductCategoriesEvent extends BusinessEvent {}
+class UpdateBusinessProductByIdEvent extends BusinessEvent {
+  final String productId;
+  final bool? isAvailable;
+  final int? stockCount;
+  UpdateBusinessProductByIdEvent({
+    this.isAvailable,
+    this.stockCount,
+    required this.productId,
+  });
+}

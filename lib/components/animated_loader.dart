@@ -1,5 +1,5 @@
-import 'package:campus_cart/core/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:campus_cart/core/theme/theme.dart';
 
 class AnimatedLoadingPage extends StatefulWidget {
   final String message;
@@ -24,7 +24,7 @@ class _AnimatedLoadingPageState extends State<AnimatedLoadingPage>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
     _scaleAnimation = Tween<double>(

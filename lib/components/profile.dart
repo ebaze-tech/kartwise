@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
-import 'package:flutter/material.dart';
 
 class Profile extends StatelessWidget {
   final Map<String, dynamic> userProfileEntity;
@@ -197,12 +197,13 @@ class Profile extends StatelessWidget {
     required List<Widget> items,
     Widget? trailingHeader,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+    return Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: DefaultColors.gray.withValues(alpha: 0.2)),
+        side: BorderSide(color: DefaultColors.gray.withValues(alpha: 0.2)),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

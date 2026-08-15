@@ -1,7 +1,6 @@
 import 'dart:io';
-
-import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 import 'package:campus_cart/features/business/data/models/business_products_model.dart';
+import 'package:campus_cart/features/business/data/models/business_categories_model.dart';
 import 'package:campus_cart/features/business/domain/repositories/business_repository.dart';
 
 class BusinessProductsUsecase {
@@ -35,8 +34,18 @@ class BusinessProductsUsecase {
     return await repository.getBusinessProducts();
   }
 
-  Future<BusinessProductByIdModel> getBusinessProductById(String productId) async {
+  Future<BusinessProductByIdModel> getBusinessProductById(
+    String productId,
+  ) async {
     return await repository.getBusinessProductById(productId);
+  }
+
+  Future<UpdateProductsModel> updateBusinessProductById(
+    bool? isAvailable,
+    int? stockCount,
+    String productId
+  ) async {
+    return await repository.updateBusinessProductById(isAvailable, stockCount,productId);
   }
 
   Future<BusinessCategoriesModel> getBusinessCategories() async {
