@@ -82,7 +82,7 @@ class _AddProductState extends State<AddProduct> {
 
   void _submitProduct() {
     if (_formKey.currentState!.validate()) {
-      print('isAvailable before request: $_isAvailableController');
+      // print('isAvailable before request: $_isAvailableController');
       if (_selectedProductCategory == null ||
           _selectedProductCategory!.isEmpty) {
         CustomSnackBar.show(
@@ -195,7 +195,10 @@ class _AddProductState extends State<AddProduct> {
                         icon: Icons.price_change_outlined,
                         readOnly: false,
                       ),
-                      BlocBuilder<ProductCategoriesBloc, ProductCategoriesState>(
+                      BlocBuilder<
+                        ProductCategoriesBloc,
+                        ProductCategoriesState
+                      >(
                         builder: (context, catState) {
                           if (catState is ProductCategoriesError) {
                             return const Padding(
@@ -423,7 +426,8 @@ class _AddProductState extends State<AddProduct> {
                 ?trailingHeader,
               ],
             ),
-          ),          ...items,
+          ),
+          ...items,
         ],
       ),
     );

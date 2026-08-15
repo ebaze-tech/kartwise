@@ -33,7 +33,7 @@ class AuthRemoteDataSource {
           'role': role,
         },
       );
-      print(response.data);
+      // print(response.data);
       return RegistrationModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -49,7 +49,7 @@ class AuthRemoteDataSource {
         '/accounts/signin',
         data: {'email': email, 'password': password},
       );
-      print(response.data);
+      // print(response.data);
       return LoginModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -65,7 +65,7 @@ class AuthRemoteDataSource {
         '/accounts/change-password',
         data: {'currentPassword': currentPassword, 'newPassword': newPassword},
       );
-      print(response.data);
+      // print(response.data);
       return PasswordUpdateModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -80,7 +80,7 @@ class AuthRemoteDataSource {
         data: {'userId': userId, 'otp': otp},
       );
 
-      print(response.data);
+      // print(response.data);
       return OtpModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -94,7 +94,7 @@ class AuthRemoteDataSource {
         '/accounts/resend-verification',
         data: {'email': email},
       );
-      print(response.data);
+      // print(response.data);
       return OtpModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -104,7 +104,7 @@ class AuthRemoteDataSource {
   Future<UserProfileModel> getUserProfile() async {
     try {
       final response = await apiClient.dio.get('/accounts/me');
-      print(response.data);
+      // print(response.data);
       return UserProfileModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -117,7 +117,7 @@ class AuthRemoteDataSource {
         '/accounts/me',
         data: {'permanentAddress': permanentAddress},
       );
-      print(response.data);
+      // print(response.data);
       return UserProfileModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -133,7 +133,7 @@ class AuthRemoteDataSource {
         '/accounts/request-email-update',
         data: {'currentEmail': currentEmail, 'newEmail': newEmail},
       );
-      print(response.data);
+      // print(response.data);
       return EmailUpdateModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -146,7 +146,7 @@ class AuthRemoteDataSource {
         '/accounts/confirm-email-update',
         data: {'otp': otp},
       );
-      print(response.data);
+      // print(response.data);
 
       return ConfirmEmailUpdateModel.fromJson(response.data);
     } on DioException catch (e) {

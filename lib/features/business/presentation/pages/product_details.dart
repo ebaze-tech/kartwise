@@ -56,17 +56,17 @@ class _ProductDetailsState extends State<ProductDetails> {
     if (_initialProduct == null) {
       return Scaffold(
         appBar: AppBar(backgroundColor: DefaultColors.primary),
-        body: Center(child: Text('Product not found')),
+        body: const Center(child: Text('Product not found')),
       );
     }
 
-    void _startAutoSlide(int imageCount) {
+    void startAutoSlide(int imageCount) {
       if (imageCount <= 1) return;
 
       _autoSlideTimer?.cancel();
 
-      _autoSlideTimer = Timer.periodic(Duration(seconds: 5), (_) {
-        if (_pageController.hasClients) return;
+      _autoSlideTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+        if (!_pageController.hasClients) return;
 
         int nextPage = _currentPage + 1;
 
@@ -76,7 +76,7 @@ class _ProductDetailsState extends State<ProductDetails> {
 
         _pageController.animateToPage(
           nextPage,
-          duration: Duration(milliseconds: 600),
+          duration: const Duration(milliseconds: 600),
           curve: Curves.easeOut,
         );
       });
@@ -89,14 +89,20 @@ class _ProductDetailsState extends State<ProductDetails> {
           ProductEntity displayedProduct = _initialProduct!;
 
           if (state is BusinessProductByIdLoading) {
-            return AnimatedLoadingPage(message: "Loading product details...");
+            return const AnimatedLoadingPage(
+              message: "Loading product details...",
+            );
           }
 
           if (state is BusinessProductByIdLoaded) {
             displayedProduct = state.data;
+            final imageCount = displayedProduct.images?.length ?? 0;
+
+            // ✅ Trigger the auto-slider once we have the data
+            startAutoSlide(imageCount);
 
             return CustomScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverAppBar(
                   expandedHeight: 300,
@@ -105,7 +111,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                   leading: IconButton(
                     onPressed: () =>
                         Navigator.of(context).pushNamed('/business_products'),
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back,
                       color: DefaultColors.background,
                     ),
@@ -118,12 +124,16 @@ class _ProductDetailsState extends State<ProductDetails> {
                               .toList() ??
                           [],
                       height: 300,
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        _currentPage = index;
+                      },
                     ),
                   ),
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -131,7 +141,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
                                 vertical: 4,
                               ),
@@ -155,13 +165,13 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           displayedProduct.name,
                           style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
                           "₦${displayedProduct.price}",
                           style: Theme.of(context).textTheme.titleMedium
@@ -170,22 +180,22 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 color: DefaultColors.primary,
                               ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.inventory_2_outlined,
                               color: DefaultColors.gray,
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             Text(
                               "Stock Remaining: ",
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(fontWeight: FontWeight.bold),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Text(
                               " ${displayedProduct.stockCount} units",
                               style: Theme.of(context).textTheme.bodyLarge
@@ -196,31 +206,31 @@ class _ProductDetailsState extends State<ProductDetails> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Text(
                           "Description",
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
                           displayedProduct.description,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         Button(
                           buttonText: "Edit Product",
                           isIconButton: false,
                           onPressed: () {
-                            print(displayedProduct.id);
+                            // print(displayedProduct.id);
                             Navigator.of(context).pushNamed(
                               '/edit_product',
                               arguments: displayedProduct,
                             );
                           },
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),

@@ -32,7 +32,7 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
       body: BlocConsumer<BusinessBloc, BusinessState>(
         listener: (context, state) {
           if (state is BusinessLoaded) {
-            print('Business Loaded: ${state.data}');
+            // print('Business Loaded: ${state.data}');
 
             if (state.data.isEmpty) {
               Navigator.of(context).pushReplacementNamed('/register_business');
@@ -49,12 +49,12 @@ class _BusinessWrapperState extends State<BusinessWrapper> {
 
           if (state is BusinessError) {
             if (state.errorMessage.contains('No business data found')) {
-              print('User has no business. Routing to registration...');
+              // print('User has no business. Routing to registration...');
               Navigator.of(context).pushReplacementNamed('/register_business');
               return;
             }
 
-            print('Business Error: ${state.errorMessage}');
+            // print('Business Error: ${state.errorMessage}');
             CustomSnackBar.show(
               context: context,
               message: state.errorMessage,

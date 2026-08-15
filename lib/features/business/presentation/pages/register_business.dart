@@ -75,12 +75,6 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
     }
   }
 
-  void _removeImage() {
-    setState(() {
-      _bannerImage?.delete();
-    });
-  }
-
   void _onRegisterBusiness() {
     if (_formKey.currentState!.validate()) {
       if (_selectedCategory == null || _selectedCategory!.isEmpty) {
@@ -231,7 +225,7 @@ class _RegisterBusinessState extends State<RegisterBusiness> {
                             },
                             builder: (context, state) {
                               if (state is BusinessCategoriesLoaded) {
-                                print(state.data.toString());
+                                // print(state.data.toString());
                                 return CustomDropdownField<String>(
                                   labelText: 'Business Category',
                                   icon: Icons.category,

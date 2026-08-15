@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:campus_cart/core/theme/theme.dart';
 
 class FloatingAction extends StatelessWidget {
   final Function()? onPressed;
@@ -6,17 +7,13 @@ class FloatingAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 65,
-      width: 65,
-      child: FloatingActionButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-        elevation: 0,
-        backgroundColor: Colors.green,
-        // foregroundColor: DefaultColors.background,
-        onPressed: onPressed,
-        child: Icon(Icons.add, size: 55, color: Colors.white),
-      ),
+    return FloatingActionButton(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+      elevation: 0,
+      backgroundColor: DefaultColors.primary,
+      foregroundColor: DefaultColors.background,
+      onPressed: onPressed,
+      child: Icon(Icons.add, size: 40, color: Colors.white),
     );
   }
 }

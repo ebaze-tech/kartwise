@@ -46,17 +46,20 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         event.bannerImage,
         event.isActive,
       );
-      await _storage.write(key: 'businessId', value: response.data.id);
-      await _storage.write(key: 'businessName', value: response.data.name);
-      await _storage.write(
-        key: 'businessEmail',
-        value: response.data.emailAddress,
-      );
-      await _storage.write(
-        key: 'businessPhone',
-        value: response.data.phoneNumber,
-      );
-      emit(BusinessLoaded(message: response.message, data: [response.data]));
+
+      if (response.data.isNotEmpty) {
+        final business = response.data.first;
+        await _storage.write(key: 'businessId', value: business.id);
+        await _storage.write(key: 'businessName', value: business.name);
+        await _storage.write(
+          key: 'businessEmail',
+          value: business.emailAddress,
+        );
+        await _storage.write(key: 'businessPhone', value: business.phoneNumber);
+      }
+
+      // Pass the list directly
+      emit(BusinessLoaded(message: response.message, data: response.data));
     } catch (e) {
       emit(BusinessError(errorMessage: _getCleanErrorMessage(e)));
     }
@@ -80,18 +83,19 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
         event.bannerImage,
       );
 
-      await _storage.write(key: 'businessId', value: response.data.id);
-      await _storage.write(key: 'businessName', value: response.data.name);
-      await _storage.write(
-        key: 'businessEmail',
-        value: response.data.emailAddress,
-      );
-      await _storage.write(
-        key: 'businessPhone',
-        value: response.data.phoneNumber,
-      );
+      if (response.data.isNotEmpty) {
+        final business = response.data.first;
+        await _storage.write(key: 'businessId', value: business.id);
+        await _storage.write(key: 'businessName', value: business.name);
+        await _storage.write(
+          key: 'businessEmail',
+          value: business.emailAddress,
+        );
+        await _storage.write(key: 'businessPhone', value: business.phoneNumber);
+      }
+
       emit(
-        BusinessUpdateLoaded(message: response.message, data: [response.data]),
+        BusinessUpdateLoaded(message: response.message, data: response.data),
       );
     } catch (e) {
       emit(BusinessUpdateError(errorMessage: _getCleanErrorMessage(e)));
@@ -105,17 +109,19 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     emit(BusinessLoading());
     try {
       final response = await _getBusinessUseCase.call();
-      await _storage.write(key: 'businessId', value: response.data.id);
-      await _storage.write(key: 'businessName', value: response.data.name);
-      await _storage.write(
-        key: 'businessEmail',
-        value: response.data.emailAddress,
-      );
-      await _storage.write(
-        key: 'businessPhone',
-        value: response.data.phoneNumber,
-      );
-      emit(BusinessLoaded(message: response.message, data: [response.data]));
+
+      if (response.data.isNotEmpty) {
+        final business = response.data.first;
+        await _storage.write(key: 'businessId', value: business.id);
+        await _storage.write(key: 'businessName', value: business.name);
+        await _storage.write(
+          key: 'businessEmail',
+          value: business.emailAddress,
+        );
+        await _storage.write(key: 'businessPhone', value: business.phoneNumber);
+      }
+
+      emit(BusinessLoaded(message: response.message, data: response.data));
     } catch (e) {
       emit(BusinessError(errorMessage: _getCleanErrorMessage(e)));
     }
@@ -132,9 +138,9 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
       final businessEmail = await _storage.read(key: 'businessEmail');
       final businessPhone = await _storage.read(key: 'businessPhone');
 
-      print(
-        'Local Business Data: ID=$businessId, Name=$businessName, Email=$businessEmail, Phone=$businessPhone',
-      );
+      // print(
+      //   'Local Business Data: ID=$businessId, Name=$businessName, Email=$businessEmail, Phone=$businessPhone',
+      // );
 
       if (businessId != null &&
           businessName != null &&
@@ -151,7 +157,9 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
       } else {
         emit(BusinessError(errorMessage: 'No local business data found.'));
       }
-    } catch (e) {}
+    } catch (e) {
+      emit(BusinessError(errorMessage: _getCleanErrorMessage(e)));
+    }
   }
 
   Future<void> _onGetBusinessProducts(

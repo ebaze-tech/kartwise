@@ -11,7 +11,7 @@ class CategoriesRemoteDataSource {
   Future<BusinessCategoriesModel> getBusinessCategories() async {
     try {
       final response = await apiClient.dio.get('/business/categories');
-      print(response.data);
+      // print(response.data);
       return BusinessCategoriesModel.fromJson(response.data);
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -21,7 +21,7 @@ class CategoriesRemoteDataSource {
   Future<ProductCategoriesModel> getProductCategories() async {
     try {
       final resposne = await apiClient.dio.get('/business/products/categories');
-      print(resposne.data);
+      // print(resposne.data);
       return ProductCategoriesModel.fromJson(resposne.data);
     } on DioException catch (e) {
       throw _handleDioError(e);

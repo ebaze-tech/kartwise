@@ -1,16 +1,19 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 
 class ProductImageCarousel extends StatefulWidget {
   final List<String> imageUrls;
   final double height;
+  final PageController? controller;
+  final ValueChanged<int>? onPageChanged;
 
   const ProductImageCarousel({
     super.key,
     required this.imageUrls,
     this.height = 300,
+    this.controller,
+    this.onPageChanged,
   });
 
   @override
@@ -18,17 +21,16 @@ class ProductImageCarousel extends StatefulWidget {
 }
 
 class _ProductImageCarouselState extends State<ProductImageCarousel> {
-  late final PageController _pageController;
+  late PageController _pageController;
 
   Timer? _autoSlideTimer;
-
   int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
 
-    _pageController = PageController();
+    _pageController = widget.controller ?? PageController();
 
     _startAutoSlide();
   }
@@ -52,7 +54,9 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
   @override
   void dispose() {
     _autoSlideTimer?.cancel();
-    _pageController.dispose();
+    if (widget.controller == null) {
+      _pageController.dispose();
+    }
 
     super.dispose();
   }
@@ -80,6 +84,9 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
               setState(() {
                 _currentPage = index;
               });
+              if (widget.onPageChanged != null) {
+                widget.onPageChanged!(index);
+              }
             },
             itemBuilder: (context, index) {
               return Image.network(

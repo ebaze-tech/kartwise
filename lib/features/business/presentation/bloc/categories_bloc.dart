@@ -19,7 +19,7 @@ class BusinessCategoriesBloc
     try {
       emit(BusinessCategoriesLoading());
       final response = await _categoriesUseCase.getBusinessCategories();
-      print(response.data);
+      // print(response.data);
 
       emit(
         BusinessCategoriesLoaded(
@@ -48,7 +48,7 @@ class ProductCategoriesBloc
     emit(ProductCategoriesLoading());
     try {
       final response = await _categoriesUseCase.getProductCategories();
-      print(response.data);
+      // print(response.data);
       emit(
         ProductCategoriesLoaded(message: response.message, data: response.data),
       );

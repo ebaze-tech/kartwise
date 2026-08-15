@@ -44,6 +44,7 @@ dependencies:
   dio: ^5.11.0
   image_picker: ^1.2.3
   material_symbols_icons: ^4.2960.0
+  flutter_lints: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -54,12 +55,6 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^6.0.0
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
 
   # The following line ensures that the Material Icons font is

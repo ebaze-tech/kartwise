@@ -140,8 +140,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: DefaultColors.primary,
           foregroundColor: DefaultColors.whiteText,
-          disabledBackgroundColor: DefaultColors.primary.withOpacity(0.4),
-          disabledForegroundColor: DefaultColors.whiteText.withOpacity(0.8),
+          disabledBackgroundColor: DefaultColors.primary.withValues(alpha:0.4),
+          disabledForegroundColor: DefaultColors.whiteText.withValues(alpha:0.8),
           textStyle: GoogleFonts.inter(
             fontSize: FontSize.bodyLarge,
             fontWeight: FontWeight.w600,

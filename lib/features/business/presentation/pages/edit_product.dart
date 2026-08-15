@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:campus_cart/components/error.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/components/toggle.dart';
 import 'package:campus_cart/components/snackbar.dart';
