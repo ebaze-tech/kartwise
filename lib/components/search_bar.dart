@@ -22,7 +22,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   void dispose() {
     _controller.dispose();
     super.dispose();
-    FocusScope.of(context).unfocus();
   }
 
   void _clearSearch() {
