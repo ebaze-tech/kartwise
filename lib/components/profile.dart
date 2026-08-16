@@ -18,6 +18,8 @@ class Profile extends StatelessWidget {
     final String lastName = userProfileEntity['lastName'] ?? 'N/A';
     final String fullName = '$firstName $lastName'.trim();
     final String email = userProfileEntity['email'] ?? 'N/A';
+    final String? profilePicture =
+        userProfileEntity['profilePictureUrl'] as String?;
     final String emailVerified = userProfileEntity['emailVerified'] == true
         ? 'Verified'
         : 'Not Verified';
@@ -42,7 +44,7 @@ class Profile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildHeader(context, fullName, role),
+          _buildHeader(context, fullName, role, profilePicture),
           const SizedBox(height: 32),
 
           _buildSectionCard(
@@ -135,15 +137,29 @@ class Profile extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, String name, String role) {
+  Widget _buildHeader(
+    BuildContext context,
+    String name,
+    String role,
+    String? profilePicture,
+  ) {
+    final bool hasValidPicture =
+        profilePicture != null &&
+        profilePicture.isNotEmpty &&
+        profilePicture != 'N/A';
+
     return Column(
       children: [
         Stack(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 45,
               backgroundColor: DefaultColors.gray,
-              backgroundImage: AssetImage('assets/images/person.png'),
+              backgroundImage:
+                  hasValidPicture
+                      ? NetworkImage(profilePicture)
+                      : const AssetImage('assets/images/person.png')
+                          as ImageProvider,
             ),
             Positioned(
               bottom: 0,
