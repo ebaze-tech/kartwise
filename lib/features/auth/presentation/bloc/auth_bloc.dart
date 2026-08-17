@@ -42,7 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuthStatusEvent>(_onCheckAuthStatus);
     on<LogoutEvent>(_onLogout);
     on<UserProfileEvent>(_onGetUserProfile);
-    on<UpdatePermanentAddressEvent>(_onUpdateUserProfile);
+    on<UpdateUserProfileEvent>(_onUpdateUserProfile);
     on<RequestEmailUpdateEvent>(_onRequestEmailUpdate);
     on<ConfirmEmailUpdateEvent>(_onConfirmEmailUpdate);
     on<UpdatePasswordEvent>(_onUpdatePassword);
@@ -190,21 +190,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onUpdateUserProfile(
-    UpdatePermanentAddressEvent event,
+    UpdateUserProfileEvent event,
     Emitter<AuthState> emit,
   ) async {
-    emit(UpdatePermanentAddressLoading());
+    emit(UpdateUserProfileLoading());
     try {
-      final response = await updateProfileUsecase.call(event.permanentAddress);
+      final response = await updateProfileUsecase.call(
+        event.permanentAddress,
+        event.profilePicture,
+      );
       // print(response.data);
       emit(
-        UpdatePermanentAddressSuccess(
+        UpdateUserProfileSuccess(
           data: response.data,
           message: response.message,
         ),
       );
     } catch (e) {
-      emit(UpdatePermanentAddressError(errorMessage: _getCleanErrorMessage(e)));
+      emit(UpdateUserProfileError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 

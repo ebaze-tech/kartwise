@@ -29,7 +29,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   void _updatePermanentAddress() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthBloc>().add(
-        UpdatePermanentAddressEvent(
+        UpdateUserProfileEvent(
           permanentAddress: _permanentAddressController.text.trim(),
         ),
       );
@@ -84,14 +84,15 @@ class _UpdateProfileState extends State<UpdateProfile> {
                 const SizedBox(height: 32),
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
-                    if (state is UpdatePermanentAddressSuccess) {
+                    if (state is UpdateUserProfileSuccess) {
                       CustomSnackBar.show(
                         message: state.message,
                         context: context,
                         isError: false,
                       );
                       Navigator.of(context).pushNamed('/user_profile');
-                    } else if (state is UpdatePermanentAddressError) {
+                    }
+                    if (state is UpdateUserProfileError) {
                       CustomSnackBar.show(
                         message: state.errorMessage,
                         context: context,
@@ -100,7 +101,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                     }
                   },
                   builder: (context, state) {
-                    final isLoading = state is UpdatePermanentAddressLoading;
+                    final isLoading = state is UpdateUserProfileLoading;
                     return Button(
                       buttonText: isLoading ? "Updating..." : "Done",
                       isIconButton: false,

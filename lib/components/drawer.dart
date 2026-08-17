@@ -19,8 +19,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
   Widget build(BuildContext context) {
     final argument = ModalRoute.of(context)?.settings.arguments;
 
-    late String businessName;
-    late String businessOwner;
+    String businessName = "N/A";
+    String businessOwner = "N/A";
     if (argument is BusinessEntity) {
       businessName = argument.name;
       businessOwner = argument.emailAddress;

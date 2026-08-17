@@ -1,3 +1,5 @@
+import 'dart:io';
+
 abstract class AuthEvent {}
 
 class RegisterEvent extends AuthEvent {
@@ -39,8 +41,9 @@ class UserProfileEvent extends AuthEvent {}
 
 class UpdateUserProfileEvent extends AuthEvent {
   final String permanentAddress;
+  final File? profilePicture;
 
-  UpdateUserProfileEvent({required this.permanentAddress});
+  UpdateUserProfileEvent({required this.permanentAddress, this.profilePicture});
 }
 
 class CheckAuthStatusEvent extends AuthEvent {}
@@ -58,11 +61,15 @@ class ConfirmEmailUpdateEvent extends AuthEvent {
   ConfirmEmailUpdateEvent({required this.otp});
 }
 
-class UpdatePermanentAddressEvent extends AuthEvent {
-  final String permanentAddress;
+// class UpdatePermanentAddressEvent extends AuthEvent {
+//   final String permanentAddress;
+//   final File? profilePicture;
 
-  UpdatePermanentAddressEvent({required this.permanentAddress});
-}
+//   UpdatePermanentAddressEvent({
+//     required this.permanentAddress,
+//     this.profilePicture,
+//   });
+// }
 
 class UpdatePasswordEvent extends AuthEvent {
   final String currentPassword;

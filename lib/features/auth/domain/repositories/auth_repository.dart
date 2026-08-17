@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
@@ -26,7 +28,10 @@ abstract class AuthRepository {
     String currentPassword,
     String newPassword,
   );
-  Future<UserProfileModel> updateUserProfile(String permanentAddress);
+  Future<UserProfileModel> updateUserProfile(
+    String permanentAddress,
+    File? profilePicture,
+  );
 
   Future<EmailUpdateModel> updateEmail(String currentEmail, String newEmail);
 
