@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:campus_cart/features/auth/data/datasource/auth_remote_data_source.dart';
+import 'package:campus_cart/features/auth/data/models/avatar_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
@@ -64,14 +65,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserProfileModel> updateUserProfile(
-    String permanentAddress,
-    File? profilePicture,
-  ) async {
-    return await authRemoteDataSource.updateUserProfile(
-      permanentAddress,
-      profilePicture,
-    );
+  Future<UserProfileModel> updateUserProfile(String permanentAddress) async {
+    return await authRemoteDataSource.updateUserProfile(permanentAddress);
+  }
+
+  @override
+  Future<AvatarUpdateModel> updateUserAvatar(File profilePicture) async {
+    return await authRemoteDataSource.updateUserAvatar(profilePicture);
   }
 
   @override

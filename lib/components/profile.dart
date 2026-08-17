@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:campus_cart/components/snackbar.dart';
+import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
-import 'package:flutter/material.dart';
-import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -31,7 +31,7 @@ class _ProfileState extends State<Profile> {
   Future<void> _pickAndUpdateProfilePicture() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      imageQuality: 90,
     );
 
     if (pickedFile != null) {
@@ -40,22 +40,22 @@ class _ProfileState extends State<Profile> {
       });
 
       if (mounted) {
-        final permanentAddress = widget.userProfileEntity['permanentAddress'];
+        final permanentAddress =
+            widget.userProfileEntity['permanentAddress'] as String?;
 
-        context.read<AuthBloc>().add(
-          UpdateUserProfileEvent(
-            permanentAddress: permanentAddress,
-            profilePicture: _profilePicture,
-          ),
-        );
-      }
-    } else {
-      if (mounted) {
-        CustomSnackBar.show(
-          context: context,
-          message: 'No profile picture selected.',
-          isError: true,
-        );
+        if (permanentAddress != null) {
+          context.read<AuthBloc>().add(
+            UpdateUserAvatarEvent(profilePicture: _profilePicture!),
+          );
+        } else {
+          if (mounted) {
+            CustomSnackBar.show(
+              context: context,
+              message: 'No profile picture selected',
+              isError: true,
+            );
+          }
+        }
       }
     }
   }
@@ -66,9 +66,7 @@ class _ProfileState extends State<Profile> {
     final String lastName = widget.userProfileEntity['lastName'] ?? 'N/A';
     final String fullName = '$firstName $lastName'.trim();
     final String email = widget.userProfileEntity['email'] ?? 'N/A';
-    final String? profilePicture =
-        widget.userProfileEntity['profilePictureUrl'] as String?;
-
+    final String avatar = widget.userProfileEntity['profilePictureUrl'];
     final String emailVerified =
         widget.userProfileEntity['emailVerified'] == true
         ? 'Verified'
@@ -78,8 +76,7 @@ class _ProfileState extends State<Profile> {
         ? 'Student Entrepreneur'
         : 'Student';
 
-    final String permanentAddress =
-        widget.userProfileEntity['permanentAddress'] ?? 'N/A';
+    final String university = widget.userProfileEntity['university'] ?? 'N/A';
 
     final String storeName = widget.businessEntity?.name.isNotEmpty == true
         ? widget.businessEntity!.name
@@ -89,121 +86,100 @@ class _ProfileState extends State<Profile> {
         ? 'Active'
         : 'Inactive';
 
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is UpdateUserProfileSuccess) {
-          CustomSnackBar.show(
-            context: context,
-            message: state.message,
-            isError: false,
-          );
-        }
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildHeader(context, fullName, role, avatar),
+          const SizedBox(height: 32),
 
-        if (state is UpdateUserProfileError) {
-          CustomSnackBar.show(
+          _buildSectionCard(
             context: context,
-            message: state.errorMessage,
-            isError: true,
-          );
-        }
-      },
-      builder: (context, state) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildHeader(context, fullName, role, profilePicture, state),
-              const SizedBox(height: 32),
-              _buildSectionCard(
+            title: 'PERSONAL INFORMATION',
+            trailingHeader: _buildActiveBadge(status: emailVerified),
+            items: [
+              _buildListItem(
                 context: context,
-                title: 'PERSONAL INFORMATION',
-                trailingHeader: _buildActiveBadge(status: emailVerified),
-                items: [
-                  _buildListItem(
-                    context: context,
-                    icon: Icons.person_outline,
-                    label: 'Full Name',
-                    value: fullName,
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  _buildListItem(
-                    context: context,
-                    icon: Icons.mail_outline,
-                    label: 'Email Address',
-                    value: email,
-                    onTap: () {
-                      Navigator.of(
-                        context,
-                      ).pushNamed('/update_email', arguments: email);
-                    },
-                    trailingIcon: Icons.chevron_right,
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  _buildListItem(
-                    context: context,
-                    icon: Icons.school_outlined,
-                    label: 'Permanent Address',
-                    value: permanentAddress,
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/update_profile');
-                    },
-                    trailingIcon: Icons.chevron_right,
-                  ),
-                ],
+                icon: Icons.person_outline,
+                label: 'Full Name',
+                value: fullName,
+                onTap: () {},
               ),
-              const SizedBox(height: 16),
-              _buildSectionCard(
+              _buildListItem(
                 context: context,
-                title: 'BUSINESS PROFILE',
-                trailingHeader: _buildActiveBadge(status: storeStatus),
-                items: [
-                  _buildListItem(
-                    context: context,
-                    icon: Icons.storefront_outlined,
-                    label: 'Store Name',
-                    value: storeName,
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/update_business');
-                    },
-                    trailingIcon: Icons.chevron_right,
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  _buildListItem(
-                    context: context,
-                    icon: Icons.payments_outlined,
-                    label: 'Payment Methods',
-                    value: 'Cash, Transfer, Card',
-                    onTap: () {
-                      Navigator.of(
-                        context,
-                      ).pushNamed('/update_payment_methods');
-                    },
-                    trailingIcon: Icons.chevron_right,
-                  ),
-                ],
+                icon: Icons.mail_outline,
+                label: 'Email Address',
+                value: email,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/update_email',
+                    arguments: email,
+                  );
+                },
+                trailingIcon: Icons.chevron_right,
               ),
-              const SizedBox(height: 16),
-              _buildSectionCard(
+              _buildListItem(
                 context: context,
-                title: 'SECURITY',
-                items: [
-                  _buildActionItem(
-                    context: context,
-                    icon: Icons.lock_outline,
-                    label: 'Change Password',
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/update_password');
-                    },
-                  ),
-                ],
+                icon: Icons.school_outlined,
+                label: 'University',
+                value: university,
+                onTap: () {
+                  Navigator.pushNamed(context, '/update_university');
+                },
+                trailingIcon: Icons.chevron_right,
               ),
-              const SizedBox(height: 24),
             ],
           ),
-        );
-      },
+          const SizedBox(height: 16),
+
+          _buildSectionCard(
+            context: context,
+            title: 'BUSINESS PROFILE',
+            trailingHeader: _buildActiveBadge(status: storeStatus),
+            items: [
+              _buildListItem(
+                context: context,
+                icon: Icons.storefront_outlined,
+                label: 'Store Name',
+                value: storeName,
+                onTap: () {
+                  Navigator.pushNamed(context, '/update_business');
+                },
+                trailingIcon: Icons.chevron_right,
+              ),
+              _buildListItem(
+                context: context,
+                icon: Icons.payments_outlined,
+                label: 'Payment Methods',
+                value: 'Cash, Transfer, Card',
+                onTap: () {
+                  Navigator.pushNamed(context, '/update_payment_methods');
+                },
+                trailingIcon: Icons.chevron_right,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          _buildSectionCard(
+            context: context,
+            title: 'SECURITY',
+            items: [
+              _buildActionItem(
+                context: context,
+                icon: Icons.lock_outline,
+                label: 'Change Password',
+                onTap: () {
+                  Navigator.pushNamed(context, '/update_password');
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
     );
   }
 
@@ -211,32 +187,8 @@ class _ProfileState extends State<Profile> {
     BuildContext context,
     String name,
     String role,
-    String? profilePictureUrl,
-    AuthState state,
+    String avatar,
   ) {
-    final bool hasValidNetworkPicture =
-        profilePictureUrl != null &&
-        profilePictureUrl.isNotEmpty &&
-        profilePictureUrl != 'N/A';
-
-    final bool isLoading = state is UpdateUserProfileLoading;
-
-    if (state is UpdateUserProfileSuccess) {
-      CustomSnackBar.show(
-        context: context,
-        message: state.message,
-        isError: false,
-      );
-      Navigator.of(context).pushNamed('/user_profile');
-    }
-    if (state is UpdateUserProfileError) {
-      CustomSnackBar.show(
-        context: context,
-        message: state.errorMessage,
-        isError: true,
-      );
-    }
-
     return Column(
       children: [
         Stack(
@@ -246,13 +198,7 @@ class _ProfileState extends State<Profile> {
               backgroundColor: DefaultColors.gray,
               backgroundImage: _profilePicture != null
                   ? FileImage(_profilePicture!) as ImageProvider
-                  : (hasValidNetworkPicture
-                        ? NetworkImage(profilePictureUrl)
-                        : const AssetImage('assets/images/person.png')
-                              as ImageProvider),
-              child: isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : null,
+                  : NetworkImage(avatar),
             ),
             Positioned(
               bottom: 0,
@@ -265,13 +211,37 @@ class _ProfileState extends State<Profile> {
                   shape: BoxShape.circle,
                   border: Border.all(color: DefaultColors.background, width: 2),
                 ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.edit,
-                    size: 20,
-                    color: DefaultColors.background,
-                  ),
-                  onPressed: isLoading ? null : _pickAndUpdateProfilePicture,
+                child: BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is UpdateUserAvatarSuccess) {
+                      print("profile picture updated: ${state.message}");
+                      CustomSnackBar.show(
+                        context: context,
+                        message: state.message,
+                        isError: false,
+                      );
+
+                      context.read<AuthBloc>().add(UserProfileEvent());
+                    }
+
+                    if (state is UpdateUserAvatarError) {
+                      CustomSnackBar.show(
+                        context: context,
+                        message: state.errorMessage,
+                        isError: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    return IconButton(
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 20,
+                        color: DefaultColors.background,
+                      ),
+                      onPressed: _pickAndUpdateProfilePicture,
+                    );
+                  },
                 ),
               ),
             ),
@@ -310,13 +280,12 @@ class _ProfileState extends State<Profile> {
     required List<Widget> items,
     Widget? trailingHeader,
   }) {
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: DefaultColors.gray.withValues(alpha: 0.2)),
+        border: Border.all(color: DefaultColors.gray.withValues(alpha: 0.2)),
       ),
-      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -338,11 +307,10 @@ class _ProfileState extends State<Profile> {
                     letterSpacing: 0.5,
                   ),
                 ),
-                if (trailingHeader != null) trailingHeader,
+                ?trailingHeader,
               ],
             ),
           ),
-          const Divider(height: 1),
           ...items,
         ],
       ),

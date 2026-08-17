@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:campus_cart/features/auth/data/models/avatar_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/confirm_email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
+import 'package:campus_cart/features/auth/domain/entities/avatar_update_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/login_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/otp_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/registration_entity.dart';
@@ -28,10 +30,10 @@ abstract class AuthRepository {
     String currentPassword,
     String newPassword,
   );
-  Future<UserProfileModel> updateUserProfile(
-    String permanentAddress,
-    File? profilePicture,
-  );
+
+  Future<UserProfileModel> updateUserProfile(String permanentAddress);
+
+  Future<AvatarUpdateModel> updateUserAvatar(File profilePicture);
 
   Future<EmailUpdateModel> updateEmail(String currentEmail, String newEmail);
 

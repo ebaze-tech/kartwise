@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:campus_cart/features/auth/data/models/avatar_update_model.dart';
 import 'package:dio/dio.dart';
 import 'package:campus_cart/core/network/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -113,29 +114,30 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<UserProfileModel> updateUserProfile(
-    String permanentAddress,
-    File? profilePicture,
-  ) async {
+  Future<UserProfileModel> updateUserProfile(String permanentAddress) async {
     try {
-      final profilePictureMultipartFile = profilePicture != null
-          ? await MultipartFile.fromFile(
-              profilePicture.path,
-              filename: profilePicture.path.split('/').last,
-            )
-          : null;
       final response = await apiClient.dio.patch(
         '/accounts/me',
+        data: {'permanentAddress': permanentAddress},
+      );
+      // print(response.data);
+      return UserProfileModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<AvatarUpdateModel> updateUserAvatar(File profilePicture) async {
+    try {
+      final response = await apiClient.dio.patch(
+        '/accounts/me/avatar',
         data: FormData.fromMap({
-          'permanentAddress': permanentAddress,
-          if (profilePictureMultipartFile != null)
-            'profilePicture': profilePictureMultipartFile,
+          'profilePicture': await MultipartFile.fromFile(profilePicture.path),
         }),
       );
       print(response.data);
-      return UserProfileModel.fromJson(response.data);
+      return AvatarUpdateModel.fromJson(response.data);
     } on DioException catch (e) {
-      print(e.toString());
       throw _handleDioError(e);
     }
   }

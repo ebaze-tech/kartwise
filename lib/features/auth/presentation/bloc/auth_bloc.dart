@@ -46,6 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RequestEmailUpdateEvent>(_onRequestEmailUpdate);
     on<ConfirmEmailUpdateEvent>(_onConfirmEmailUpdate);
     on<UpdatePasswordEvent>(_onUpdatePassword);
+    on<UpdateUserAvatarEvent>(_onUpdateUserAvatar);
   }
 
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
@@ -195,10 +196,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(UpdateUserProfileLoading());
     try {
-      final response = await updateProfileUsecase.call(
-        event.permanentAddress,
-        event.profilePicture,
-      );
+      final response = await updateProfileUsecase.call(event.permanentAddress);
       // print(response.data);
       emit(
         UpdateUserProfileSuccess(
@@ -208,6 +206,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     } catch (e) {
       emit(UpdateUserProfileError(errorMessage: _getCleanErrorMessage(e)));
+    }
+  }
+
+  Future<void> _onUpdateUserAvatar(
+    UpdateUserAvatarEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(UpdateUserAvatarLoading());
+    try {
+      final response = await updateProfileUsecase.updateUserAvatar(
+        event.profilePicture,
+      );
+      emit(UpdateUserAvatarSuccess(message: response.message));
+
+      add(UserProfileEvent());
+    } catch (e) {
+      emit(UpdateUserAvatarError(errorMessage: _getCleanErrorMessage(e)));
     }
   }
 

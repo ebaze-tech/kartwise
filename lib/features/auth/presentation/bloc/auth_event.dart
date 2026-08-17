@@ -61,15 +61,11 @@ class ConfirmEmailUpdateEvent extends AuthEvent {
   ConfirmEmailUpdateEvent({required this.otp});
 }
 
-// class UpdatePermanentAddressEvent extends AuthEvent {
-//   final String permanentAddress;
-//   final File? profilePicture;
+class UpdateUserAvatarEvent extends AuthEvent {
+  final File profilePicture;
 
-//   UpdatePermanentAddressEvent({
-//     required this.permanentAddress,
-//     this.profilePicture,
-//   });
-// }
+  UpdateUserAvatarEvent({required this.profilePicture});
+}
 
 class UpdatePasswordEvent extends AuthEvent {
   final String currentPassword;

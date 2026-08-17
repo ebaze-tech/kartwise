@@ -97,3 +97,17 @@ class UpdateUserPasswordError extends AuthState {
 
   UpdateUserPasswordError({required this.errorMessage});
 }
+
+class UpdateUserAvatarLoading extends AuthState {}
+
+class UpdateUserAvatarSuccess extends AuthState {
+  final String message;
+
+  UpdateUserAvatarSuccess({required this.message});
+}
+
+class UpdateUserAvatarError extends AuthState {
+  final String errorMessage;
+
+  UpdateUserAvatarError({required this.errorMessage});
+}

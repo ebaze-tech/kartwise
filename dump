@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:campus_cart/components/snackbar.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
+import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_cart/core/theme/theme.dart';
 import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
@@ -28,7 +29,6 @@ class _ProfileState extends State<Profile> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickAndUpdateProfilePicture() async {
-    // 1. Pick the image
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
@@ -38,12 +38,12 @@ class _ProfileState extends State<Profile> {
       setState(() {
         _profilePicture = File(pickedFile.path);
       });
-      
-      // 2. Dispatch the update event
+
       if (mounted) {
-        final permanentAddress = widget.userProfileEntity['permanentAddress'] ?? 'N/A';
+        final permanentAddress = widget.userProfileEntity['permanentAddress'];
+
         context.read<AuthBloc>().add(
-          UpdatePermanentAddressEvent(
+          UpdateUserProfileEvent(
             permanentAddress: permanentAddress,
             profilePicture: _profilePicture,
           ),
@@ -66,9 +66,11 @@ class _ProfileState extends State<Profile> {
     final String lastName = widget.userProfileEntity['lastName'] ?? 'N/A';
     final String fullName = '$firstName $lastName'.trim();
     final String email = widget.userProfileEntity['email'] ?? 'N/A';
-    final String? profilePicture = widget.userProfileEntity['profilePictureUrl'] as String?;
-    
-    final String emailVerified = widget.userProfileEntity['emailVerified'] == true
+    final String? profilePicture =
+        widget.userProfileEntity['profilePictureUrl'] as String?;
+
+    final String emailVerified =
+        widget.userProfileEntity['emailVerified'] == true
         ? 'Verified'
         : 'Not Verified';
 
@@ -76,7 +78,8 @@ class _ProfileState extends State<Profile> {
         ? 'Student Entrepreneur'
         : 'Student';
 
-    final String permanentAddress = widget.userProfileEntity['permanentAddress'] ?? 'N/A';
+    final String permanentAddress =
+        widget.userProfileEntity['permanentAddress'] ?? 'N/A';
 
     final String storeName = widget.businessEntity?.name.isNotEmpty == true
         ? widget.businessEntity!.name
@@ -86,96 +89,121 @@ class _ProfileState extends State<Profile> {
         ? 'Active'
         : 'Inactive';
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildHeader(context, fullName, role, profilePicture),
-          const SizedBox(height: 32),
-          _buildSectionCard(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is UpdateUserProfileSuccess) {
+          CustomSnackBar.show(
             context: context,
-            title: 'PERSONAL INFORMATION',
-            trailingHeader: _buildActiveBadge(status: emailVerified),
-            items: [
-              _buildListItem(
+            message: state.message,
+            isError: false,
+          );
+        }
+
+        if (state is UpdateUserProfileError) {
+          CustomSnackBar.show(
+            context: context,
+            message: state.errorMessage,
+            isError: true,
+          );
+        }
+      },
+      builder: (context, state) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildHeader(context, fullName, role, profilePicture, state),
+              const SizedBox(height: 32),
+              _buildSectionCard(
                 context: context,
-                icon: Icons.person_outline,
-                label: 'Full Name',
-                value: fullName,
-                onTap: () {},
+                title: 'PERSONAL INFORMATION',
+                trailingHeader: _buildActiveBadge(status: emailVerified),
+                items: [
+                  _buildListItem(
+                    context: context,
+                    icon: Icons.person_outline,
+                    label: 'Full Name',
+                    value: fullName,
+                    onTap: () {},
+                  ),
+                  const Divider(height: 1, indent: 56),
+                  _buildListItem(
+                    context: context,
+                    icon: Icons.mail_outline,
+                    label: 'Email Address',
+                    value: email,
+                    onTap: () {
+                      Navigator.of(
+                        context,
+                      ).pushNamed('/update_email', arguments: email);
+                    },
+                    trailingIcon: Icons.chevron_right,
+                  ),
+                  const Divider(height: 1, indent: 56),
+                  _buildListItem(
+                    context: context,
+                    icon: Icons.school_outlined,
+                    label: 'Permanent Address',
+                    value: permanentAddress,
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/update_profile');
+                    },
+                    trailingIcon: Icons.chevron_right,
+                  ),
+                ],
               ),
-              const Divider(height: 1, indent: 56),
-              _buildListItem(
+              const SizedBox(height: 16),
+              _buildSectionCard(
                 context: context,
-                icon: Icons.mail_outline,
-                label: 'Email Address',
-                value: email,
-                onTap: () {
-                  Navigator.of(context).pushNamed('/update_email', arguments: email);
-                },
-                trailingIcon: Icons.chevron_right,
+                title: 'BUSINESS PROFILE',
+                trailingHeader: _buildActiveBadge(status: storeStatus),
+                items: [
+                  _buildListItem(
+                    context: context,
+                    icon: Icons.storefront_outlined,
+                    label: 'Store Name',
+                    value: storeName,
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/update_business');
+                    },
+                    trailingIcon: Icons.chevron_right,
+                  ),
+                  const Divider(height: 1, indent: 56),
+                  _buildListItem(
+                    context: context,
+                    icon: Icons.payments_outlined,
+                    label: 'Payment Methods',
+                    value: 'Cash, Transfer, Card',
+                    onTap: () {
+                      Navigator.of(
+                        context,
+                      ).pushNamed('/update_payment_methods');
+                    },
+                    trailingIcon: Icons.chevron_right,
+                  ),
+                ],
               ),
-              const Divider(height: 1, indent: 56),
-              _buildListItem(
+              const SizedBox(height: 16),
+              _buildSectionCard(
                 context: context,
-                icon: Icons.school_outlined,
-                label: 'Permanent Address',
-                value: permanentAddress,
-                onTap: () {
-                  Navigator.of(context).pushNamed('/update_profile');
-                },
-                trailingIcon: Icons.chevron_right,
+                title: 'SECURITY',
+                items: [
+                  _buildActionItem(
+                    context: context,
+                    icon: Icons.lock_outline,
+                    label: 'Change Password',
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/update_password');
+                    },
+                  ),
+                ],
               ),
+              const SizedBox(height: 24),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildSectionCard(
-            context: context,
-            title: 'BUSINESS PROFILE',
-            trailingHeader: _buildActiveBadge(status: storeStatus),
-            items: [
-              _buildListItem(
-                context: context,
-                icon: Icons.storefront_outlined,
-                label: 'Store Name',
-                value: storeName,
-                onTap: () {
-                  Navigator.of(context).pushNamed('/update_business');
-                },
-                trailingIcon: Icons.chevron_right,
-              ),
-              const Divider(height: 1, indent: 56),
-              _buildListItem(
-                context: context,
-                icon: Icons.payments_outlined,
-                label: 'Payment Methods',
-                value: 'Cash, Transfer, Card',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/update_payment_methods');
-                },
-                trailingIcon: Icons.chevron_right,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildSectionCard(
-            context: context,
-            title: 'SECURITY',
-            items: [
-              _buildActionItem(
-                context: context,
-                icon: Icons.lock_outline,
-                label: 'Change Password',
-                onTap: () {
-                  Navigator.of(context).pushNamed('/update_password');
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -184,11 +212,30 @@ class _ProfileState extends State<Profile> {
     String name,
     String role,
     String? profilePictureUrl,
+    AuthState state,
   ) {
     final bool hasValidNetworkPicture =
         profilePictureUrl != null &&
         profilePictureUrl.isNotEmpty &&
         profilePictureUrl != 'N/A';
+
+    final bool isLoading = state is UpdateUserProfileLoading;
+
+    if (state is UpdateUserProfileSuccess) {
+      CustomSnackBar.show(
+        context: context,
+        message: state.message,
+        isError: false,
+      );
+      Navigator.of(context).pushNamed('/user_profile');
+    }
+    if (state is UpdateUserProfileError) {
+      CustomSnackBar.show(
+        context: context,
+        message: state.errorMessage,
+        isError: true,
+      );
+    }
 
     return Column(
       children: [
@@ -197,19 +244,22 @@ class _ProfileState extends State<Profile> {
             CircleAvatar(
               radius: 45,
               backgroundColor: DefaultColors.gray,
-              // If a local file is picked, show it immediately. Otherwise, fallback to network or default asset.
-              backgroundImage: _profilePicture != null 
+              backgroundImage: _profilePicture != null
                   ? FileImage(_profilePicture!) as ImageProvider
                   : (hasValidNetworkPicture
-                      ? NetworkImage(profilePictureUrl)
-                      : const AssetImage('assets/images/person.png')
-                          as ImageProvider),
+                        ? NetworkImage(profilePictureUrl)
+                        : const AssetImage('assets/images/person.png')
+                              as ImageProvider),
+              child: isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : null,
             ),
             Positioned(
               bottom: 0,
               right: 0,
               child: Container(
-                padding: const EdgeInsets.all(6),
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: DefaultColors.primary,
                   shape: BoxShape.circle,
@@ -218,10 +268,10 @@ class _ProfileState extends State<Profile> {
                 child: IconButton(
                   icon: const Icon(
                     Icons.edit,
-                    size: 14,
+                    size: 20,
                     color: DefaultColors.background,
                   ),
-                  onPressed: _pickAndUpdateProfilePicture,
+                  onPressed: isLoading ? null : _pickAndUpdateProfilePicture,
                 ),
               ),
             ),
@@ -288,8 +338,7 @@ class _ProfileState extends State<Profile> {
                     letterSpacing: 0.5,
                   ),
                 ),
-                // Fix: Properly handling nullable widget in a list literal
-                if (trailingHeader != null) trailingHeader, 
+                if (trailingHeader != null) trailingHeader,
               ],
             ),
           ),
@@ -314,7 +363,9 @@ class _ProfileState extends State<Profile> {
       leading: Icon(icon, color: DefaultColors.primary),
       title: Text(
         label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: DefaultColors.gray),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: DefaultColors.gray),
       ),
       trailing: trailingIcon != null
           ? Icon(trailingIcon, color: DefaultColors.gray)
