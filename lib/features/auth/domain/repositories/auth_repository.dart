@@ -5,7 +5,6 @@ import 'package:campus_cart/features/auth/data/models/confirm_email_update_model
 import 'package:campus_cart/features/auth/data/models/email_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/password_update_model.dart';
 import 'package:campus_cart/features/auth/data/models/user_profile_model.dart';
-import 'package:campus_cart/features/auth/domain/entities/avatar_update_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/login_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/otp_entity.dart';
 import 'package:campus_cart/features/auth/domain/entities/registration_entity.dart';

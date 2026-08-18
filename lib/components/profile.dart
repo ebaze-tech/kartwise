@@ -76,7 +76,7 @@ class _ProfileState extends State<Profile> {
         ? 'Student Entrepreneur'
         : 'Student';
 
-    final String university = widget.userProfileEntity['university'] ?? 'N/A';
+    final String permanentAddress = widget.userProfileEntity['permanentAddress'] ?? 'N/A';
 
     final String storeName = widget.businessEntity?.name.isNotEmpty == true
         ? widget.businessEntity!.name
@@ -123,10 +123,10 @@ class _ProfileState extends State<Profile> {
               _buildListItem(
                 context: context,
                 icon: Icons.school_outlined,
-                label: 'University',
-                value: university,
+                label: 'Permanent Address',
+                value: permanentAddress,
                 onTap: () {
-                  Navigator.pushNamed(context, '/update_university');
+                  Navigator.pushNamed(context, '/update_profile');
                 },
                 trailingIcon: Icons.chevron_right,
               ),
