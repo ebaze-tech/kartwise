@@ -1,8 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:campus_cart/core/theme/theme.dart';
-import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
+import 'dart:io';
 
-class Profile extends StatelessWidget {
+import 'package:campus_cart/components/snackbar.dart';
+import 'package:campus_cart/core/theme/theme.dart';
+import 'package:campus_cart/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:campus_cart/features/auth/presentation/bloc/auth_event.dart';
+import 'package:campus_cart/features/auth/presentation/bloc/auth_state.dart';
+import 'package:campus_cart/features/business/domain/entities/business_entity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+
+class Profile extends StatefulWidget {
   final Map<String, dynamic> userProfileEntity;
   final BusinessEntity? businessEntity;
 
@@ -13,29 +21,68 @@ class Profile extends StatelessWidget {
   });
 
   @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  File? _profilePicture;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickAndUpdateProfilePicture() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _profilePicture = File(pickedFile.path);
+      });
+
+      if (mounted) {
+        final permanentAddress =
+            widget.userProfileEntity['permanentAddress'] as String?;
+
+        if (permanentAddress != null) {
+          context.read<AuthBloc>().add(
+            UpdateUserAvatarEvent(profilePicture: _profilePicture!),
+          );
+        } else {
+          if (mounted) {
+            CustomSnackBar.show(
+              context: context,
+              message: 'No profile picture selected',
+              isError: true,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String firstName = userProfileEntity['firstName'] ?? 'N/A';
-    final String lastName = userProfileEntity['lastName'] ?? 'N/A';
+    final String firstName = widget.userProfileEntity['firstName'] ?? 'N/A';
+    final String lastName = widget.userProfileEntity['lastName'] ?? 'N/A';
     final String fullName = '$firstName $lastName'.trim();
-    final String email = userProfileEntity['email'] ?? 'N/A';
-    final String? profilePicture =
-        userProfileEntity['profilePictureUrl'] as String?;
-    final String emailVerified = userProfileEntity['emailVerified'] == true
+    final String email = widget.userProfileEntity['email'] ?? 'N/A';
+    final String avatar = widget.userProfileEntity['profilePictureUrl'];
+    final String emailVerified =
+        widget.userProfileEntity['emailVerified'] == true
         ? 'Verified'
         : 'Not Verified';
 
-    final String role = userProfileEntity['role'] == 'BUSINESS_OWNER'
+    final String role = widget.userProfileEntity['role'] == 'BUSINESS_OWNER'
         ? 'Student Entrepreneur'
         : 'Student';
 
-    final String permanentAddress =
-        userProfileEntity['permanentAddress'] ?? 'N/A';
+    final String permanentAddress = widget.userProfileEntity['permanentAddress'] ?? 'N/A';
 
-    final String storeName = businessEntity?.name.isNotEmpty == true
-        ? businessEntity!.name
+    final String storeName = widget.businessEntity?.name.isNotEmpty == true
+        ? widget.businessEntity!.name
         : 'My Store';
 
-    final String storeStatus = businessEntity?.isActive == true
+    final String storeStatus = widget.businessEntity?.isActive == true
         ? 'Active'
         : 'Inactive';
 
@@ -44,7 +91,7 @@ class Profile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildHeader(context, fullName, role, profilePicture),
+          _buildHeader(context, fullName, role, avatar),
           const SizedBox(height: 32),
 
           _buildSectionCard(
@@ -59,27 +106,27 @@ class Profile extends StatelessWidget {
                 value: fullName,
                 onTap: () {},
               ),
-              const Divider(height: 1, indent: 56),
               _buildListItem(
                 context: context,
                 icon: Icons.mail_outline,
                 label: 'Email Address',
                 value: email,
                 onTap: () {
-                  Navigator.of(
+                  Navigator.pushNamed(
                     context,
-                  ).pushNamed('/update_email', arguments: email);
+                    '/update_email',
+                    arguments: email,
+                  );
                 },
                 trailingIcon: Icons.chevron_right,
               ),
-              const Divider(height: 1, indent: 56),
               _buildListItem(
                 context: context,
                 icon: Icons.school_outlined,
                 label: 'Permanent Address',
                 value: permanentAddress,
                 onTap: () {
-                  Navigator.of(context).pushNamed('/update_profile');
+                  Navigator.pushNamed(context, '/update_profile');
                 },
                 trailingIcon: Icons.chevron_right,
               ),
@@ -98,18 +145,17 @@ class Profile extends StatelessWidget {
                 label: 'Store Name',
                 value: storeName,
                 onTap: () {
-                  Navigator.of(context).pushNamed('/update_business');
+                  Navigator.pushNamed(context, '/update_business');
                 },
                 trailingIcon: Icons.chevron_right,
               ),
-              const Divider(height: 1, indent: 56),
               _buildListItem(
                 context: context,
                 icon: Icons.payments_outlined,
                 label: 'Payment Methods',
                 value: 'Cash, Transfer, Card',
                 onTap: () {
-                  Navigator.of(context).pushNamed('/update_payment_methods');
+                  Navigator.pushNamed(context, '/update_payment_methods');
                 },
                 trailingIcon: Icons.chevron_right,
               ),
@@ -126,7 +172,7 @@ class Profile extends StatelessWidget {
                 icon: Icons.lock_outline,
                 label: 'Change Password',
                 onTap: () {
-                  Navigator.of(context).pushNamed('/update_password');
+                  Navigator.pushNamed(context, '/update_password');
                 },
               ),
             ],
@@ -141,13 +187,8 @@ class Profile extends StatelessWidget {
     BuildContext context,
     String name,
     String role,
-    String? profilePicture,
+    String avatar,
   ) {
-    final bool hasValidPicture =
-        profilePicture != null &&
-        profilePicture.isNotEmpty &&
-        profilePicture != 'N/A';
-
     return Column(
       children: [
         Stack(
@@ -155,26 +196,52 @@ class Profile extends StatelessWidget {
             CircleAvatar(
               radius: 45,
               backgroundColor: DefaultColors.gray,
-              backgroundImage:
-                  hasValidPicture
-                      ? NetworkImage(profilePicture)
-                      : const AssetImage('assets/images/person.png')
-                          as ImageProvider,
+              backgroundImage: _profilePicture != null
+                  ? FileImage(_profilePicture!) as ImageProvider
+                  : NetworkImage(avatar),
             ),
             Positioned(
               bottom: 0,
               right: 0,
               child: Container(
-                padding: const EdgeInsets.all(6),
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: DefaultColors.primary,
                   shape: BoxShape.circle,
                   border: Border.all(color: DefaultColors.background, width: 2),
                 ),
-                child: const Icon(
-                  Icons.edit,
-                  size: 14,
-                  color: DefaultColors.background,
+                child: BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is UpdateUserAvatarSuccess) {
+                      print("profile picture updated: ${state.message}");
+                      CustomSnackBar.show(
+                        context: context,
+                        message: state.message,
+                        isError: false,
+                      );
+
+                      context.read<AuthBloc>().add(UserProfileEvent());
+                    }
+
+                    if (state is UpdateUserAvatarError) {
+                      CustomSnackBar.show(
+                        context: context,
+                        message: state.errorMessage,
+                        isError: true,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    return IconButton(
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 20,
+                        color: DefaultColors.background,
+                      ),
+                      onPressed: _pickAndUpdateProfilePicture,
+                    );
+                  },
                 ),
               ),
             ),
@@ -213,13 +280,12 @@ class Profile extends StatelessWidget {
     required List<Widget> items,
     Widget? trailingHeader,
   }) {
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: DefaultColors.gray.withValues(alpha: 0.2)),
+        border: Border.all(color: DefaultColors.gray.withValues(alpha: 0.2)),
       ),
-      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -245,7 +311,6 @@ class Profile extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
           ...items,
         ],
       ),

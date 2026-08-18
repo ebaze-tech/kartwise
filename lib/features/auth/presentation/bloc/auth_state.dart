@@ -67,19 +67,19 @@ class ConfirmEmailUpdateError extends AuthState {
   ConfirmEmailUpdateError({required this.errorMessage});
 }
 
-class UpdatePermanentAddressLoading extends AuthState {}
+class UpdateUserProfileLoading extends AuthState {}
 
-class UpdatePermanentAddressSuccess extends AuthState {
+class UpdateUserProfileSuccess extends AuthState {
   final String message;
   final Map<String, dynamic> data;
 
-  UpdatePermanentAddressSuccess({required this.message, required this.data});
+  UpdateUserProfileSuccess({required this.message, required this.data});
 }
 
-class UpdatePermanentAddressError extends AuthState {
+class UpdateUserProfileError extends AuthState {
   final String errorMessage;
 
-  UpdatePermanentAddressError({required this.errorMessage});
+  UpdateUserProfileError({required this.errorMessage});
 }
 
 class UpdateUserPassword extends AuthState {}
@@ -96,4 +96,18 @@ class UpdateUserPasswordError extends AuthState {
   final String errorMessage;
 
   UpdateUserPasswordError({required this.errorMessage});
+}
+
+class UpdateUserAvatarLoading extends AuthState {}
+
+class UpdateUserAvatarSuccess extends AuthState {
+  final String message;
+
+  UpdateUserAvatarSuccess({required this.message});
+}
+
+class UpdateUserAvatarError extends AuthState {
+  final String errorMessage;
+
+  UpdateUserAvatarError({required this.errorMessage});
 }
